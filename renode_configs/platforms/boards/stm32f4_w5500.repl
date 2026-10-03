@@ -1,0 +1,40 @@
+using "platforms/cpus/stm32f4.repl"
+
+// STM32F4 + WIZnet W5500 (SPI Ethernet) board.
+// W5500 is a custom ISPIPeripheral loaded via:
+//   include @renode_configs/peripherals/W5500.cs
+// SPI1 on STM32F4 (SCK PA5 / MISO PA6 / MOSI PA7) is the W5500 bus.
+// W5500 control lines (all active low):
+//   SCSn -> PA4  (w5500@0)  delimits Variable-Length Data mode SPI frames
+//   RSTn -> PA3  (w5500@1)  hardware reset
+//   INTn <- PB1              interrupt to MCU (model output)
+
+w5500: Network.W5500 @ spi1
+    LoopbackMode: false
+    EnableHostSockets: true
+    -> gpioPortB@1
+
+gpioPortA:
+    4 -> w5500@0
+    3 -> w5500@1
+
+// ST LSM9DS1 9-axis IMU (accel+gyro die at 0x6B, magnetometer die at 0x1E).
+// Both are II2CPeripheral models shipped with Renode; no custom code needed.
+// Firmware drives them over I2C1 (SCL PB6 / SDA PB7) with a minimal
+// register-level master (the F1/F4 I2C is compatible for basic master use).
+lsm9ds1_imu: Sensors.LSM9DS1_IMU @ i2c1 0x6b
+lsm9ds1_mag: Sensors.LSM9DS1_Magnetic @ i2c1 0x1e
+
+// OmniVision OV7670 camera (custom SCCB model).
+// Any .resc loading this board must `include @renode_configs/peripherals/OV7670.cs` first.
+// SCCB address 0x21. Shares i2c1 with the IMU; I2C is multi-drop so there is
+// no conflict. Pixel readout is via test registers (see OV7670.cs) until a
+// parallel-bus capture path exists.
+ov7670: Sensors.OV7670 @ i2c1 0x21
+
+GreenLED: Miscellaneous.LED @ gpioPortD
+RedLED: Miscellaneous.LED @ gpioPortD
+
+gpioPortD:
+    12 -> GreenLED@0
+    14 -> RedLED@0

@@ -1,0 +1,30 @@
+# =============================================================================
+# STM32F4 + W5500 (SPI Ethernet) single node
+# Run from project root:
+#   dotnet /Applications/renode/output/bin/Release/Renode.dll --ui renode_configs/scripts/project/f4_w5500_single.resc
+#
+# NOTE: W5500 is a hardwired TCP/IP controller, NOT a Renode MAC model, so
+# there is no `connector Connect ... mesh_switch` here. In LoopbackMode
+# (default, set in the .repl) SEND loops TX->RX inside the model. With
+#   w5500 EnableHostSockets true
+# TCP/UDP is bridged to real host sockets instead.
+#
+# To run real firmware (F4 + WIZnet ioLibrary, built for STM32F407VG):
+#   (monitor) sysbus LoadELF @/path/to/f4_w5500.elf
+#   (monitor) start
+# See renode_configs/platforms/boards/stm32f4_w5500.repl.
+# =============================================================================
+
+# 1. Compile + load the custom W5500 ISPIPeripheral (Roslyn, no .dll needed)
+include @renode_configs/peripherals/W5500.cs
+
+# 2. Create the machine (path is CWD-relative; run Renode from project root)
+mach create "f4w5500"
+machine LoadPlatformDescription @renode_configs/platforms/boards/stm32f4_w5500.repl
+
+# 4. UART console (USART2 = ST-Link VCP on Discovery)
+showAnalyzer usart2
+
+logLevel 3
+
+start

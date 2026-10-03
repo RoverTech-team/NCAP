@@ -1,0 +1,57 @@
+# =============================================================================
+# NCAP over Ethernet: STM32F4 + W5500 -> micro-ROS agent through a real
+# Ethernet frame path (Renode switch + host TAP).
+#
+# This is the production topology. The W5500 model terminates ARP/IPv4/UDP
+# itself and presents an IMACInterface, so the agent sees a stable client
+# MAC/IP (00:F4:57:00:00:01 / 192.168.0.10) instead of docker-proxy's
+# per-datagram source port churn.
+#
+# Prereqs (macOS):
+#   1. build firmware:
+#        make -C firmware MICRO_AGENT_IP=192.168.0.213 MICRO_AGENT_PORT=8888 \
+#             MICRO_CLIENT_PORT=5000
+#      (the agent must be reachable at MICRO_AGENT_IP from the TAP network)
+#   2. create the host TAP device ONCE, as root:
+#        sudo ifconfig tap0 create
+#        sudo ifconfig tap0 inet 192.168.0.100 netmask 255.255.255.0 up
+#      Then give Renode access to the device:
+#        sudo chown $USER /dev/tap0
+#      (Renode needs read/write on the device node.)
+#   3. start the agent reachable on that subnet, e.g. in Docker:
+#        docker run -d --name ncap-agent --network host \
+#          microros/micro-ros-agent:humble udp4 --port 8888
+#      NOTE: `--network host` does NOT work on Docker Desktop for macOS.
+#      Use a published port plus a host bridge only if the agent IP is the
+#      Mac's own address; see README for the recommended arrangement.
+#
+# Run:
+#   /Applications/renode/renode --console renode_configs/scripts/project/f4_w5500_tap.resc
+# =============================================================================
+
+include @renode_configs/peripherals/W5500.cs
+
+mach create "f4w5500"
+machine LoadPlatformDescription @renode_configs/platforms/boards/stm32f4_w5500.repl
+
+sysbus LoadELF @firmware/build/ncap_f4_w5500.elf
+
+# Emit real Ethernet frames instead of handing UDP to host sockets.
+spi1.w5500 UseEthernet true
+spi1.w5500 LoopbackMode false
+
+emulation CreateSwitch "switch"
+
+# Host-side TAP. NOTE the "host.tap" path: Renode resolves it as a
+# HostMachine element. Do NOT write "connector Connect host switch" - that
+# fails with "Could not find a way to connect HostMachine to Switch".
+emulation CreateTap "tap0" "tap"
+connector Connect host.tap switch
+
+# Simulation side: the W5500 model's MAC (monitor path is spi1.w5500).
+connector Connect spi1.w5500 switch
+
+showAnalyzer usart2
+
+logLevel 3
+start

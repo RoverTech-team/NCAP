@@ -1,0 +1,45 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Firmware build outputs (Makefile BUILD dirs + per-node dirs)
+firmware/build/
+firmware/build_*/
+*.o
+*.d
+*.obj
+*.elf
+*.bin
+*.hex
+*.map
+# Static libs are ignored by default, except the prebuilt micro-ROS lib
+# required to link (firmware/Makefile: -L. -lmicroros).
+*.a
+!firmware/libmicroros.a
+
+# .NET / Renode model tests
+bin/
+obj/
+*.user
+.vs/
+
+# Python (scripts/video_client.py, udp_relay.py)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets / local config (none in tree today — keep it that way)
+.env
+.env.*
+
+# Logs and runtime captures
+*.log
+*.pcap

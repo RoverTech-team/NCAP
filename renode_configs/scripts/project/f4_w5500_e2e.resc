@@ -1,0 +1,27 @@
+# =============================================================================
+# NCAP end-to-end: STM32F4 + W5500 firmware -> micro-ROS agent (Docker, UDP 8888)
+#
+# Prereqs:
+#   1. build firmware:  make -C firmware
+#   2. start the agent:
+#        docker run -d --name ncap-agent -p 8888:8888/udp \
+#          microros/micro-ros-agent:humble udp4 --port 8888
+#
+# Run from the NCAP directory:
+#   dotnet /Applications/renode/output/bin/Release/Renode.dll --ui \
+#     renode_configs/scripts/project/f4_w5500_e2e.resc
+# =============================================================================
+
+include @renode_configs/peripherals/W5500.cs
+
+mach create "f4w5500"
+machine LoadPlatformDescription @renode_configs/platforms/boards/stm32f4_w5500.repl
+
+sysbus LoadELF @firmware/build/ncap_f4_w5500.elf
+
+# EnableHostSockets is set in the .repl so UDP reaches the Docker agent on the host.
+
+showAnalyzer usart2
+
+logLevel 3
+start

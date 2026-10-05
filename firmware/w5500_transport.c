@@ -1,5 +1,7 @@
 // micro-ROS custom transport over the WIZnet W5500 (SPI hardwired TCP/IP).
 // Bare-metal build: no RTOS, so read() polls RX_RSR against a HAL_GetTick deadline.
+// Under NCAP_FREERTOS=1 the poll yields through ncap_cpu_relax() instead - see
+// the comment on that hook below. The file itself stays RTOS-agnostic.
 
 #include <uxr/client/transport.h>
 #include <rmw_microxrcedds_c/config.h>
@@ -32,6 +34,23 @@
 
 static uint8_t w5500_agent_ip[4] = {127, 0, 0, 1};
 static bool w5500_opened = false;
+
+// Cooperative yield point for the RX busy-poll below.
+//
+// The poll spins on getSn_RX_RSR() with no blocking call, so on bare metal
+// (NCAP_FREERTOS=0) it must spin: there is nothing else to run. Under
+// NCAP_FREERTOS=1 the very same spin inside the executor task would starve
+// every lower-priority task - including the idle task the CPU-load metric is
+// derived from, which would then read a permanent 100% load - so main.c
+// redefines this as vTaskDelay(1).
+//
+// vTaskDelay and not taskYIELD: taskYIELD only lets a task of equal or higher
+// priority run, so the sampler and the idle task would still be locked out.
+// vTaskDelay blocks the calling task, which is what actually reopens the CPU.
+//
+// Weak by default: the no-op below keeps this file linkable on its own and
+// keeps the bare-metal personality byte-for-byte identical.
+__attribute__((weak)) void ncap_cpu_relax(void) { }
 
 // --- hex-dump tracing of every XRCE datagram (build with -DW5500_TDEBUG=1) ---
 // Off by default: a running session emits several datagrams per second and the
@@ -182,6 +201,7 @@ size_t cubemx_transport_read_w5500(struct uxrCustomTransport *transport, uint8_t
     while (getSn_RX_RSR(W5500_TRANSPORT_SOCK) == 0)
     {
         spins++;
+        ncap_cpu_relax();
         if ((int32_t)(HAL_GetTick() - start) >= timeout)
         {
 #if W5500_TDEBUG

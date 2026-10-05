@@ -248,8 +248,73 @@ void DMA2_Stream3_IRQHandler(void)
 /* USER CODE END 1 */
 
 /* USER CODE BEGIN NCAP */
+/* FreeRTOS kernel exception-vector glue.
+
+   Defensive default so this file also compiles if the Makefile ever forgets
+   -DNCAP_FREERTOS=...; bare metal stays the default personality. */
+#ifndef NCAP_FREERTOS
+#define NCAP_FREERTOS 0
+#endif
+
+#if NCAP_FREERTOS == 1
+/* start-up linkage for the kernel's exception vectors. See the SVC/PendSV note
+   below for why those two come from port.c and not from here. */
+#include "FreeRTOS.h"
+#include "task.h"
+
+/* SVC_Handler / PendSV_Handler.
+
+   This project's FreeRTOSConfig.h:175-176 already does the CMSIS aliasing
+   itself:
+       #define vPortSVCHandler    SVC_Handler
+       #define xPortPendSVHandler PendSV_Handler
+   so the preprocessor renames port.c's own definitions
+   (portable/GCC/ARM_CM4F/port.c:242 and :431) to SVC_Handler and PendSV_Handler.
+   The kernel therefore ALREADY supplies both vectors, and defining them again
+   here is not merely redundant - it is a duplicate-symbol link error.
+
+   The #if below is the escape hatch for a vanilla FreeRTOSConfig.h that does
+   not alias (where port.c really does define vPortSVCHandler/
+   xPortPendSVHandler and nothing binds them to the CMSIS names). It compiles
+   out here. Kept because startup_stm32f446xx.s:270,276 only .weak-aliases
+   SVC_Handler and PendSV_Handler to Default_Handler, so if the aliasing in
+   FreeRTOSConfig.h were ever dropped, the first task switch would land in
+   Default_Handler's fault-loop instead of the context switch.
+   The vendored V10.3.1 tree declares none of these three in any header, so the
+   forward declarations below are required, not decorative. */
+#if !defined(vPortSVCHandler) && !defined(xPortPendSVHandler)
+void vPortSVCHandler(void) __attribute__((naked));
+void xPortPendSVHandler(void) __attribute__((naked));
+void SVC_Handler(void)    { vPortSVCHandler(); }
+void PendSV_Handler(void) { xPortPendSVHandler(); }
+#endif
+
+/* SysTick is the one vector the config does NOT alias (FreeRTOSConfig.h:180
+   sets USE_CUSTOM_SYSTICK_HANDLER_IMPLEMENTATION 0 and only comments that
+   SysTick "comes from NVIC"), so this file owns it. xPortSysTickHandler is
+   declared in no header of the vendored tree - only defined in port.c:488 -
+   hence the declaration. */
+void xPortSysTickHandler(void);
+#endif /* NCAP_FREERTOS == 1 */
+
 void SysTick_Handler(void)
 {
+#if NCAP_FREERTOS == 1
+  xPortSysTickHandler();
+#endif
+  /* NOTE: HAL_IncTick() looks redundant right next to xPortSysTickHandler()
+     above - it is NOT, and deleting it silently kills the transport.
+
+     xPortSysTickHandler() only advances the FreeRTOS tick; it does not touch
+     uwTick. HAL's tick is a separate counter and it is load-bearing:
+       - w5500_transport.c, cubemx_transport_read_w5500() (~lines 178-197),
+         spins on getSn_RX_RSR() and escapes via
+         (int32_t)(HAL_GetTick() - start) >= timeout. If uwTick freezes, every
+         XRCE read instantly reports timeout, the session desyncs and the node
+         goes quiet with no error message.
+       - video_udp.c (~lines 403-420) paces its frame deadline with
+         HAL_GetTick() / HAL_Delay().
+     So both calls must run on every SysTick. Keep HAL_IncTick() here. */
   HAL_IncTick();
 }
 /* USER CODE END NCAP */

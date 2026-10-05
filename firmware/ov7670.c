@@ -7,11 +7,13 @@
 
 #define REG_PID            0x0Au
 #define REG_VER            0x0Bu
+#define REG_COM3           0x0Cu
 #define REG_COM7           0x12u
 #define REG_CLKRC          0x11u
+#define REG_COM14          0x3Eu
+#define REG_TSLB           0x3Au
 #define REG_COM15          0x40u
 #define REG_COM17          0x42u
-#define REG_TSLB           0x3Au
 #define REG_FRAME_ROW_H    0xF0u
 #define REG_FRAME_ROW_L    0xF1u
 #define REG_FRAME_ROW_CNT  0xF2u
@@ -23,6 +25,22 @@
 // QVGA YUV422 under the model's simplified COM7 decoding
 // (bit4 = QVGA, bits[1:0] = 00 = YUV422).
 #define COM7_QVGA_YUV      0x10u
+
+// Output scaling, per the OV7670 datasheet:
+//   COM3[3] Scale enable, COM3[2] DCW enable (horizontal /2),
+//   COM14[3] Manual scaling enable, COM14[2:0] vertical divider.
+// QVGA 320x240 with COM3=0x0C, COM14=0x09 becomes QQVGA 160x120, which is what
+// makes a full YUV422 frame (2 bytes/pixel) fit the F446's 128 KB of RAM.
+#define COM3_SCALE_DCW     0x0Cu
+#define COM14_QQVGA        0x09u
+
+// Ask the sensor for the geometry the rest of the firmware was built for.
+#ifndef OV7670_OUT_WIDTH
+#define OV7670_OUT_WIDTH   VIDEO_WIDTH
+#endif
+#ifndef OV7670_OUT_HEIGHT
+#define OV7670_OUT_HEIGHT  VIDEO_HEIGHT
+#endif
 
 bool ov7670_init(void)
 {
@@ -68,13 +86,34 @@ bool ov7670_init(void)
         return false;
     }
 
+    // Downscale to the requested output geometry when it is smaller than
+    // QVGA. DCW halves the width, COM14's manual divider halves the height.
+    uint8_t com3 = 0x00u;
+    uint8_t com14 = 0x00u;
+    if ((uint32_t)OV7670_OUT_WIDTH <= 160u)
+    {
+        com3 = COM3_SCALE_DCW;
+    }
+    if ((uint32_t)OV7670_OUT_HEIGHT <= 120u)
+    {
+        com14 = COM14_QQVGA;
+    }
+    if (!i2c1_write_reg(OV7670_ADDR, REG_COM3, com3) ||
+        !i2c1_write_reg(OV7670_ADDR, REG_COM14, com14))
+    {
+        printf("F4: ov7670 scaling write failed\r\n");
+        return false;
+    }
+
     uint8_t back = 0;
     if (!i2c1_read_regs(OV7670_ADDR, REG_COM7, &back, 1u) || back != COM7_QVGA_YUV)
     {
         printf("F4: ov7670 COM7 readback=%02X\r\n", back);
         return false;
     }
-    printf("F4: ov7670 QVGA YUV422 configured\r\n");
+    printf("F4: ov7670 QVGA YUV422 configured, out %ux%u (COM3=%02X COM14=%02X)\r\n",
+           (unsigned)OV7670_OUT_WIDTH, (unsigned)OV7670_OUT_HEIGHT,
+           (unsigned)com3, (unsigned)com14);
     return true;
 }
 

@@ -1,0 +1,1394 @@
+{
+ "mxfile": {
+  "host": "app.diagrams.net",
+  "agent": "NCAP docs",
+  "version": "24.7.17",
+  "diagram": [
+   {
+    "id": "ncap-modules",
+    "name": "Modules",
+    "mxGraphModel": {
+     "dx": "2100",
+     "dy": "1500",
+     "grid": "1",
+     "gridSize": "10",
+     "guides": "1",
+     "tooltips": "1",
+     "connect": "1",
+     "arrows": "1",
+     "fold": "1",
+     "page": "1",
+     "pageScale": "1",
+     "pageWidth": "2100",
+     "pageHeight": "1400",
+     "math": "0",
+     "shadow": "0",
+     "layers": [
+      {
+       "cells": [
+        {
+         "id": "0"
+        },
+        {
+         "id": "1",
+         "value": "",
+         "style": "",
+         "parent": "0",
+         "vertex": "1",
+         "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+         }
+        },
+        {
+         "id": "gRen",
+         "value": "Renode peripheral models  <font style='font-size:10px'>(renode_configs/peripherals/)</font>",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 40,
+          "y": 80,
+          "width": 560,
+          "height": 300
+         }
+        },
+        {
+         "id": "gRepl",
+         "value": "Board description  <font style='font-size:10px'>(renode_configs/platforms/boards/)</font>",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 40,
+          "y": 610,
+          "width": 560,
+          "height": 170
+         }
+        },
+        {
+         "id": "gApp",
+         "value": "Application firmware  <font style='font-size:10px'>(firmware/)</font>",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 40,
+          "y": 1010,
+          "width": 560,
+          "height": 500
+         }
+        },
+        {
+         "id": "gPlat",
+         "value": "Renode built-in platform  <font style='font-size:10px'>(Renode install)</font>",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#eef3ff;strokeColor=#6c8ebf;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 1022,
+          "y": 80,
+          "width": 560,
+          "height": 340
+         }
+        },
+        {
+         "id": "gCube",
+         "value": "CubeMX-generated HAL glue",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 1022,
+          "y": 640,
+          "width": 560,
+          "height": 300
+         }
+        },
+        {
+         "id": "g3rd",
+         "value": "Third-party / prebuilt",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 1022,
+          "y": 1030,
+          "width": 560,
+          "height": 240
+         }
+        },
+        {
+         "id": "gHost",
+         "value": "Host tooling  <font style='font-size:10px'>(scripts/)</font>",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 2004,
+          "y": 80,
+          "width": 560,
+          "height": 360
+         }
+        },
+        {
+         "id": "gExt",
+         "value": "External consumers",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 2004,
+          "y": 650,
+          "width": 560,
+          "height": 210
+         }
+        },
+        {
+         "id": "mW5500",
+         "value": "W5500.cs\nSPI Ethernet\n16 KB TX/RX per socket",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "gRen",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "mOV76",
+         "value": "OV7670.cs\nSCCB regs + DVP bus\nPCLK/VSYNC/HREF/D0-D7",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "gRen",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "mDCMI",
+         "value": "Dcmi.cs\nRM0090 ch.13 map\nno CGR/CCMR on F4",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "gRen",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 228,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "mTest",
+         "value": "W5500_model/ tests\nEthernetTests.cs",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "gRen",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 228,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "bRepl",
+         "value": "stm32f4_w5500.repl\nw5500 @ spi2 \u00b7 dcmi @ sysbus 0x50050000\nov7670 @ i2c1 0x21 \u00b7 DMAReceive -> dma2@1\nIRQ -> nvic@78 \u00b7 StreamEnable -> ov7670@0",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "gRepl",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 44,
+          "width": 260,
+          "height": 120
+         }
+        },
+        {
+         "id": "aMain",
+         "value": "main.c\npersonality 0/1/2\nSystemClock_Config",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "gApp",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "aDVP",
+         "value": "ov7670_dvp.c / .h\nDCMI + DMA2 -> ring\nin-place Y strip",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "gApp",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 228,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "aI2C",
+         "value": "i2c1.c\nI2C1 master\n400 kHz fast mode",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "gApp",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 412,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "aWiz",
+         "value": "wizchip_port.c\nSPI2 burst R/W\n64-byte chunks\nCS=PB12 RST=PB11",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 62,
+          "y": 1606,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "aVid",
+         "value": "video_udp.c\nframing + deadline pacer\nVIDEO_FPS target",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "gApp",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "aOV",
+         "value": "ov7670.c\nSCCB init, COM7 YUV422\nCOM3/COM14 scaling",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "gApp",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 228,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "aIMU",
+         "value": "imu.c\nLSM9DS1 accel/gyro/mag\nsensor_msgs/Imu",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "gApp",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 412,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "aXRCE",
+         "value": "w5500_transport.c\nmicro-ROS XRCE\nsocket 0",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 464,
+          "y": 1606,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "pCPU",
+         "value": "STM32F4 CPU\nCortex-M4",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "gPlat",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "pSPI",
+         "value": "SPI.STM32SPI\nspi1 / spi2",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "gPlat",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "pI2C",
+         "value": "I2C.STM32F1_I2C\ni2c1 @ 0x54",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "gPlat",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 228,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "pUART",
+         "value": "UART.STM32_UART\nusart2 debug",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "gPlat",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 228,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "pDMA",
+         "value": "DMA.STM32DMA\ndma1/dma2\nCIRC tagged+ignored",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 1044,
+          "y": 492,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "pGPIO",
+         "value": "BaseGPIOPort\ngpioPortA..D",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 1446,
+          "y": 492,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "pBUF",
+         "value": "Memory / Cortex-M4\nNVIC",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "gCube",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 36,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "pLED",
+         "value": "LED x2 (Green/Red)",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "gCube",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 36,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "cClk",
+         "value": "system_clock.c\nSystemClock_Config()\n168 MHz",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "gCube",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "cSpi",
+         "value": "spi.c\nMX_SPI1/2_Init\nSPI2 = /4",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "gCube",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "cIt",
+         "value": "stm32f4xx_it.c\nDCMI_IRQHandler\nSysTick_Handler",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "gCube",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 228,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "cUs",
+         "value": "usart.c\n115200",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "gCube",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 228,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "cDma",
+         "value": "dma.c",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "g3rd",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 22,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "cTim",
+         "value": "tim.c / gpio.c",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
+         "parent": "g3rd",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 22,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "tLib",
+         "value": "ioLibrary/\nsocket.c \u00b7 W5500/w5500.c\nsendto() clips to TX_FSR",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;",
+         "parent": "g3rd",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 44,
+          "width": 270,
+          "height": 90
+         }
+        },
+        {
+         "id": "tROS",
+         "value": "libmicroros.a + headers\nrclc_executor_spin_some()",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;",
+         "parent": "g3rd",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "tSVD",
+         "value": "CMSIS stm32f446xx.h\nDCMI_TypeDef",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 1044,
+          "y": 1258,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "tHAL",
+         "value": "STM32F4xx HAL\n(no HAL_DCMI)",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 1446,
+          "y": 1258,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "hRun",
+         "value": "run_video.sh\nbuild + Renode\n+ verify",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "gHost",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "hRun5",
+         "value": "run_5node_video.sh\nN streams",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "gHost",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "hCli",
+         "value": "video_client.py\nreassemble+verify\nWANT, VID_TIMEOUT",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "gHost",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 228,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "hRel",
+         "value": "udp_relay.py\nport forward",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "gHost",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 228,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "hProbe",
+         "value": "fps / ramp probes\nindependent pixel\nverification",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 2026,
+          "y": 492,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "hUdp",
+         "value": "host UDP stack\n127.0.0.1:18080+n",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 2428,
+          "y": 492,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "eAgent",
+         "value": "micro-ROS agent\nudp/8888",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;",
+         "parent": "gExt",
+         "vertex": "1",
+         "geometry": {
+          "x": 22,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "eView",
+         "value": "microk3/vfr_stream.py\nVfrUdpViewer -> JPEG\nFlask dashboard",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;",
+         "parent": "gExt",
+         "vertex": "1",
+         "geometry": {
+          "x": 424,
+          "y": 44,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "eRss",
+         "value": "ROS topics\n/heartbeat, /imu/data",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 2026,
+          "y": 878,
+          "width": 230,
+          "height": 88
+         }
+        },
+        {
+         "id": "n1",
+         "value": "<b>Design notes</b><br/>&#8226; W5500 sits on <b>spi2</b> (PB13/14/15, CS PB12, RST PB11) because DCMI hard-owns PA4 (VSYNC) and PA6 (PIXCLK) with no remap available.<br/>&#8226; STM32F4 DCMI has <b>no CGR/CCMR</b>, so chroma is stripped on the CPU; BSM/OEBS at CR 16-18 are reserved per RM0090.<br/>&#8226; The OV7670 has <b>no YUV420</b> mode - 8-bit outputs are YUV422 / RGB / GRB 4:2:2 / Raw - so QVGA YUV422 (153600 B) cannot fit 128 KB RAM.<br/>&#8226; Socket 0 = micro-ROS, socket 1 = video. Every cross-container edge runs in a gutter between containers; edges inside one container run in the gaps between boxes.<br/>&#8226; Parallel edges are held at least 24 px apart so individual lines stay traceable.<br/>&#8226; Tests: renode-test robot suite plus the standalone W5500 model project.",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;spacingLeft=8;spacingTop=6;align=left;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 40,
+          "y": 1180,
+          "width": 1880,
+          "height": 140
+         }
+        },
+        {
+         "id": "e1",
+         "value": "SPI2 bus",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "mW5500",
+         "target": "bRepl",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 177.0,
+            "y": 471.0
+           },
+           {
+            "x": 192.0,
+            "y": 471.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e2",
+         "value": "DVP bus + SCCB",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "mOV76",
+         "target": "bRepl",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 579.0,
+            "y": 495.0
+           },
+           {
+            "x": 205.0,
+            "y": 495.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e3",
+         "value": "sysbus 0x50050000",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "mDCMI",
+         "target": "bRepl",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 177.0,
+            "y": 519.0
+           },
+           {
+            "x": 218.0,
+            "y": 519.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e4",
+         "value": "instantiated on",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "bRepl",
+         "target": "pSPI",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 437.0,
+            "y": 714.0
+           },
+           {
+            "x": 437.0,
+            "y": 168.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e5",
+         "value": "instantiated on",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "bRepl",
+         "target": "pI2C",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 461.0,
+            "y": 727.0
+           },
+           {
+            "x": 461.0,
+            "y": 352.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e6",
+         "value": "DMAReceive -> dma2@1",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "bRepl",
+         "target": "pDMA",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 485.0,
+            "y": 740.0
+           },
+           {
+            "x": 485.0,
+            "y": 536.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e7",
+         "value": "SCCB writes (0x21)",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "mOV76",
+         "target": "aI2C",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 592.0,
+            "y": 683.0
+           },
+           {
+            "x": 177.0,
+            "y": 683.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e8",
+         "value": "register R/W",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "mDCMI",
+         "target": "aDVP",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 190.0,
+            "y": 707.0
+           },
+           {
+            "x": 177.0,
+            "y": 707.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e9",
+         "value": "DR request/word",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "mDCMI",
+         "target": "pDMA",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 763.0,
+            "y": 352.0
+           },
+           {
+            "x": 763.0,
+            "y": 536.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e10",
+         "value": "captured frame",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aDVP",
+         "target": "aVid",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 318.0,
+            "y": 1282.0
+           },
+           {
+            "x": 318.0,
+            "y": 1098.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e11",
+         "value": "init + geometry",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aOV",
+         "target": "aDVP",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 342.0,
+            "y": 1282.0
+           },
+           {
+            "x": 342.0,
+            "y": 1295.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e12",
+         "value": "sendto()",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aVid",
+         "target": "aWiz",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 366.0,
+            "y": 1111.0
+           },
+           {
+            "x": 366.0,
+            "y": 1650.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e13",
+         "value": "callback struct",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aWiz",
+         "target": "tLib",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 787.0,
+            "y": 1663.0
+           },
+           {
+            "x": 787.0,
+            "y": 1119.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e14",
+         "value": "SPI frames",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "tLib",
+         "target": "mW5500",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "e15",
+         "value": "rmw_uros_set_custom_transport",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aXRCE",
+         "target": "tROS",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 811.0,
+            "y": 1650.0
+           },
+           {
+            "x": 811.0,
+            "y": 1118.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e16",
+         "value": "socket 0",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aXRCE",
+         "target": "tLib",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 835.0,
+            "y": 1663.0
+           },
+           {
+            "x": 835.0,
+            "y": 1145.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e17",
+         "value": "NCAP_VIDEO_UDP",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aMain",
+         "target": "aVid",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 390.0,
+            "y": 1098.0
+           },
+           {
+            "x": 390.0,
+            "y": 1124.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e18",
+         "value": "NCAP_DVP",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aMain",
+         "target": "aDVP",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 177.0,
+            "y": 1190.0
+           },
+           {
+            "x": 190.0,
+            "y": 1190.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e19",
+         "value": "NCAP_VIDEO_UDP=0/2",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aMain",
+         "target": "aXRCE",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 414.0,
+            "y": 1111.0
+           },
+           {
+            "x": 414.0,
+            "y": 1650.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e20",
+         "value": "SystemClock_Config",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aMain",
+         "target": "cClk",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "e21",
+         "value": "SPI2 /4",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aVid",
+         "target": "cSpi",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "e22",
+         "value": "hspi2",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aWiz",
+         "target": "cSpi",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "e23",
+         "value": "WHO_AM_I / bursts",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aIMU",
+         "target": "aI2C",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 438.0,
+            "y": 1466.0
+           },
+           {
+            "x": 438.0,
+            "y": 1466.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e24",
+         "value": "DCMI_IRQHandler",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "cIt",
+         "target": "aDVP",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "e25",
+         "value": "DCMI_TypeDef",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aDVP",
+         "target": "tSVD",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 859.0,
+            "y": 1308.0
+           },
+           {
+            "x": 859.0,
+            "y": 1302.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e26",
+         "value": "Renode emulation",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "hRun",
+         "target": "pCPU",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 1793.0,
+            "y": 168.0
+           },
+           {
+            "x": 1793.0,
+            "y": 168.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e27",
+         "value": "make + LoadELF",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "hRun",
+         "target": "aMain",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "e28",
+         "value": "launches receiver",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "hRun",
+         "target": "hCli",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 2141.0,
+            "y": 248.0
+           },
+           {
+            "x": 2141.0,
+            "y": 248.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e29",
+         "value": "per-node verify",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "hRun5",
+         "target": "hRel",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 2543.0,
+            "y": 272.0
+           },
+           {
+            "x": 2543.0,
+            "y": 272.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e30",
+         "value": "receives",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "hCli",
+         "target": "hUdp",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 2330.0,
+            "y": 352.0
+           },
+           {
+            "x": 2330.0,
+            "y": 536.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e31",
+         "value": "independent check",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "hProbe",
+         "target": "hUdp",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 2354.0,
+            "y": 536.0
+           },
+           {
+            "x": 2354.0,
+            "y": 549.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e32",
+         "value": "optional consumer",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "hUdp",
+         "target": "eView",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 2543.0,
+            "y": 533.0
+           },
+           {
+            "x": 2543.0,
+            "y": 533.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e33",
+         "value": "XRCE on 8888",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "hUdp",
+         "target": "eAgent",
+         "geometry": {
+          "relative": "1",
+          "Array": "points",
+          "points": [
+           {
+            "x": 2556.0,
+            "y": 557.0
+           },
+           {
+            "x": 2141.0,
+            "y": 557.0
+           }
+          ]
+         }
+        },
+        {
+         "id": "e34",
+         "value": "debug log",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+         "parent": "1",
+         "edge": "1",
+         "source": "aXRCE",
+         "target": "pUART",
+         "geometry": {
+          "relative": "1"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ }
+}

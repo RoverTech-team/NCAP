@@ -31,6 +31,11 @@ const rosidl_message_type_support_t *
 rosidl_typesupport_microxrcedds_c__get_message_type_support_handle__std_msgs__msg__Int32(void);
 const rosidl_message_type_support_t *
 rosidl_typesupport_microxrcedds_c__get_message_type_support_handle__sensor_msgs__msg__Imu(void);
+// Present in the prebuilt libmicroros.a (verified with nm), declared the same
+// way as the two above. Only needed when the sysusage module is compiled in;
+// sysusage.h has its own copy, this keeps the set visible in one place.
+const rosidl_message_type_support_t *
+rosidl_typesupport_microxrcedds_c__get_message_type_support_handle__diagnostic_msgs__msg__DiagnosticArray(void);
 
 #include "wizchip_conf.h"
 #include "socket.h"
@@ -40,10 +45,38 @@ rosidl_typesupport_microxrcedds_c__get_message_type_support_handle__sensor_msgs_
 
 #include "video_udp.h"
 
+#include "sysusage.h"
+
 // 1 = stream synthetic grayscale luma over UDP (see video_udp.c)
 // 0 = micro-ROS client publishing std_msgs/Int32 (default)
 #ifndef NCAP_VIDEO_UDP
 #define NCAP_VIDEO_UDP 0
+#endif
+
+// 1 = build the FreeRTOS kernel and hand the main loop to vTaskStartScheduler().
+// 0 = the historic bare-metal super-loop (default).
+#ifndef NCAP_FREERTOS
+#define NCAP_FREERTOS 0
+#endif
+
+#if NCAP_FREERTOS == 1
+#include "FreeRTOS.h"
+#include "task.h"
+
+/* Turn the W5500 RX busy-poll into a cooperative yield point. See the
+   ncap_cpu_relax comment in w5500_transport.c: without this the executor task
+   spins on getSn_RX_RSR() and locks out every lower-priority task, which pins
+   the idle-tick counter at zero and makes cpu_load_pct read a permanent 100%.
+   vTaskDelay rather than taskYIELD because only vTaskDelay reopens the CPU to
+   strictly lower priorities (the sampler and the idle task). */
+/* Strong, deliberately: the transport's fallback is __attribute__((weak)), and
+   two weak definitions would be resolved by link order alone - i.e. by luck.
+   Strong here makes "the scheduler yields" the guaranteed winner whenever
+   NCAP_FREERTOS=1, and lets the transport keep its weak no-op for bare metal. */
+void ncap_cpu_relax(void)
+{
+    vTaskDelay(1);
+}
 #endif
 
 extern SPI_HandleTypeDef hspi1;
@@ -144,6 +177,110 @@ static std_msgs__msg__Int32 msg;
 static sensor_msgs__msg__Imu imu_msg;
 static uint32_t counter;
 static bool imu_ready;
+#if NCAP_SYSUSAGE == 1
+static bool sysusage_publish_failed;
+#endif
+
+#if NCAP_FREERTOS == 1
+/* ---- FreeRTOS application callbacks -------------------------------------
+   configSUPPORT_STATIC_ALLOCATION is 1, so the kernel asks the application -
+   not the heap - for the idle task memory, and configUSE_IDLE_HOOK is 1 so it
+   also demands vApplicationIdleHook(). Nothing in this tree supplies them:
+   cmsis_os2.c, which carries weak fallbacks, is deliberately excluded from SRC,
+   and Core/Src/freertos.c is dead CubeMX robot code that is not built. Without
+   the two functions below the NCAP_FREERTOS=1 link dies with
+   "undefined reference to vApplicationGetIdleTaskMemory / vApplicationIdleHook".
+
+   vApplicationGetTimerTaskMemory is deliberately NOT here: configUSE_TIMERS is
+   0 (nothing calls xTimerCreate, and the daemon cost ~1356 B of .bss for no
+   gain), so timers.c never references it. Re-adding it is the first thing to do
+   if configUSE_TIMERS ever goes back to 1.
+
+   Static, not heap: the F446 has 128 KB of RAM of which ~70 KB is already
+   data+bss in the full-feature build, and sysusage's own task is static too, so
+   nothing here draws on configTOTAL_HEAP_SIZE. */
+static StaticTask_t idle_task_tcb;
+static StackType_t  idle_task_stack[configMINIMAL_STACK_SIZE];
+
+/* Idle-tick counter, the CPU-load primitive the plan calls for: sample it and
+   uxTaskGetTickCount() from any thread and
+       idle_pct  = 100 * (idle_now - idle_then) / (ticks_now - ticks_then)
+       load_pct  = 100 - idle_pct
+   Deliberately non-static and volatile: sysusage.c samples it from its own task
+   and must not be able to optimise the read away. Written only by the idle
+   hook below, so the delta is the one-word increment and needs no lock. */
+volatile uint32_t ncap_idle_ticks;
+
+/* Weak on purpose: sysusage.c also defines vApplicationIdleHook, because the
+   idle-tick counter is the CPU-load primitive its sampler reads - and it must
+   keep a reference to the symbol so --gc-sections does not discard it. Both
+   definitions are genuinely required:
+
+     - sysusage.c is absent from the NCAP_SYSUSAGE=0 NCAP_FREERTOS=1 row, so
+       without the weak copy below that row cannot link at all;
+     - with both rows on, sysusage.c's strong definition is what the linker
+       keeps and the weak copy is discarded silently.
+
+   Weak (rather than deleting either side) is what lets all four matrix rows
+   link. Same pattern as the __WEAK vApplicationIdleHook in
+   CMSIS_RTOS_V2/cmsis_os2.c, which this build excludes on purpose. */
+__attribute__((weak)) void vApplicationGetIdleTaskMemory(StaticTask_t **tcb, StackType_t **stack, uint32_t *size)
+{
+    *tcb = &idle_task_tcb;
+    *stack = idle_task_stack;
+    *size = (uint32_t)configMINIMAL_STACK_SIZE;
+}
+
+/* MUST stay trivial: it runs at idle-task priority with scheduler locks held, so
+   anything slow here is invisible CPU time that the load metric reports as busy.
+   One increment, no printf, no HAL, no rclc. Note that in the full-feature build
+   sysusage.c's strong definition is the one that actually runs; this fallback
+   exists only to keep the scheduler linkable when sysusage is compiled out. */
+__attribute__((weak)) void vApplicationIdleHook(void)
+{
+    ncap_idle_ticks++;
+}
+
+/* ---- the rclc executor task ----------------------------------------------
+   Under NCAP_FREERTOS the scheduler owns the loop, so something has to spin the
+   executor or the 1 Hz timer_callback() never fires and *nothing* is published -
+   not the heartbeat, not the IMU, not /diagnostics. This task is that something.
+
+   Only this task ever calls rclc. A second executor on the same XRCE client
+   would interleave datagrams on the one UDP session the W5500 socket owns and
+   corrupt it, which is exactly why sysusage.c samples from its own task and
+   hands the result over instead of publishing itself. See docs/plan-sysusage.md.
+
+   Bounded spin_some() rather than the blocking spin(): rclc_executor_spin()
+   never returns, and even one trip through it parks the task inside the
+   transport's RX deadline loop for the whole timeout. The vTaskDelay(1) between
+   slices guarantees a blocking point per tick even if the transport read
+   returns immediately. */
+#define RCL_TASK_PRIO        2
+#define RCL_TASK_STACK       (256u)
+#define RCL_SLICE_NS         (5ULL * 1000ULL * 1000ULL)
+
+static StaticTask_t rcl_task_tcb;
+static StackType_t  rcl_task_stack[RCL_TASK_STACK];
+
+static void rcl_task(void *arg)
+{
+    (void)arg;
+    for (;;)
+    {
+        rclc_executor_spin_some(&executor, RCL_SLICE_NS);
+        vTaskDelay(1);
+    }
+}
+
+static void rcl_task_start(void)
+{
+    /* V10.3.1 order is (fn, name, depth, params, prio, stack, tcb) - NOT the
+       CubeMX/CMSIS-v2 order, and it returns a TaskHandle_t, not a BaseType_t. */
+    (void)xTaskCreateStatic(rcl_task, "rcl", RCL_TASK_STACK, NULL,
+                            RCL_TASK_PRIO, rcl_task_stack, &rcl_task_tcb);
+}
+#endif /* NCAP_FREERTOS == 1 */
 
 static void timer_callback(rcl_timer_t *tm, int64_t ts)
 {
@@ -195,6 +332,36 @@ static void timer_callback(rcl_timer_t *tm, int64_t ts)
     {
         uart_puts("publish err\r\n");
     }
+
+#if NCAP_SYSUSAGE == 1
+    /* Telemetry rides the heartbeat on purpose: timer_callback() is driven by
+       the 1 Hz rcl_timer (PUB_PERIOD), so this fires exactly once per heartbeat
+       with no extra rate limiting - a second decimation would only desynchronise
+       /diagnostics from the heartbeat it is meant to explain. The publish cost
+       is one preallocated DiagnosticArray serialised on the same socket the
+       heartbeat already uses, so it cannot stall the heartbeat by construction.
+
+       Everything sysusage.c cannot see is stamped here, on the rclc executor's
+       own thread - never from the sampler task, which must not touch rclc
+       (single XRCE session). video_fps_x100 stays 0 (= n/a): frame rate is
+       owned by video_udp.c, which is not linked into the default personality. */
+    sysusage_extra_t extra;
+    extra.uptime_ms      = HAL_GetTick();
+    extra.pool_size      = (uint32_t)POOL_SIZE;
+    extra.pool_used      = (uint32_t)pool_used;
+    extra.video_fps_x100 = 0u;
+    sysusage_set_extra(&extra);
+    if (sysusage_publish() != RCL_RET_OK)
+    {
+        /* Announce once only, then stay quiet: a telemetry failure must never
+           degrade or stall the heartbeat, so no retry and no park. */
+        if (!sysusage_publish_failed)
+        {
+            sysusage_publish_failed = true;
+            uart_puts("sysusage publish err - heartbeat only\r\n");
+        }
+    }
+#endif /* NCAP_SYSUSAGE == 1 */
 }
 
 int main(void)
@@ -202,7 +369,10 @@ int main(void)
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
+    // The W5500 is on SPI2 now (SPI1's PA4/PA6 belong to DCMI), so SPI2 is
+    // the bus that must be up. SPI1 is left initialised for any other user.
     MX_SPI1_Init();
+    MX_SPI2_Init();
     MX_USART2_UART_Init();
 
     uart_puts("\r\nNCAP micro-ROS over W5500\r\n");
@@ -296,6 +466,21 @@ int main(void)
         while (1) { }
     }
 
+#if NCAP_SYSUSAGE == 1
+    /* Optional publisher: on failure print one line and carry on with the
+       heartbeat only - same degrade-not-park decision as the IMU publisher
+       below. Parking here would take the node down over telemetry. */
+    if (!sysusage_publisher_init(&support, &node, &allocator, NULL))
+    {
+        uart_puts("sysusage publisher unavailable\r\n");
+        printf("F4: sysusage publisher unavailable\r\n");
+    }
+    else
+    {
+        uart_puts("sysusage publisher ok\r\n");
+    }
+#endif /* NCAP_SYSUSAGE == 1 */
+
     rcl_ret_t pub_ret = rclc_publisher_init_default(&publisher, &node, ROS_TOPIC_TYPE, hb_topic);
     if (pub_ret != RCL_RET_OK)
     {
@@ -350,6 +535,38 @@ int main(void)
     }
     uart_puts("executor ok, spinning\r\n");
 
+#if NCAP_FREERTOS == 1
+    /* FreeRTOS owns the loop from here. There is deliberately NO bare-metal
+       fallback below this point: the two spin loops at the bottom of main()
+       never return, so a spin loop placed after vTaskStartScheduler() would be
+       dead code.
+
+       The executor moves into its own task (rcl_task, above) because a scheduler
+       that is never spun publishes nothing at all. Task creation order matters:
+       everything must exist before xPortStartFirstTask() picks a task to run,
+       so both the rcl task and the sysusage sampler are created here, on the
+       main() stack and before the scheduler starts.
+
+       Priorities, lowest to highest (configMAX_PRIORITIES is 8, plenty):
+         0  idle task        - the CPU-load metric's numerator
+         1  sysusage sampler - only when NCAP_SYSUSAGE=1
+         2  rcl task         - only non-idle task above the sampler
+       The rcl task must be strictly above the sampler, and must block rather
+       than spin, or the sampler's periodic sample is starved by the transport's
+       RX poll. Both properties come from ncap_cpu_relax() above. */
+    rcl_task_start();
+#if NCAP_SYSUSAGE == 1
+    (void)sysusage_task_start();
+#endif
+    uart_puts("freertos scheduler starting\r\n");
+    vTaskStartScheduler();
+    /* Not reached: xPortStartScheduler() does not return once the scheduler is
+       running. Kept as an explicit park rather than a silent fall-through. */
+    uart_puts("scheduler RETURNED - fault\r\n");
+    while (1) { }
+#endif /* NCAP_FREERTOS == 1 */
+
+/* ---- bare-metal personalities: the only live loops when NCAP_FREERTOS == 0 ---- */
 #if NCAP_VIDEO_UDP == 2
     // Combined run: micro-ROS owns the control plane (heartbeat on DDS) and the
     // video stream runs on its own W5500 socket. rclc_executor_spin() never

@@ -1,0 +1,852 @@
+{
+ "mxfile": {
+  "host": "app.diagrams.net",
+  "agent": "NCAP docs",
+  "version": "24.7.17",
+  "type": "device",
+  "diagram": [
+   {
+    "id": "ncap-swarch",
+    "name": "Software architecture",
+    "mxGraphModel": {
+     "dx": "1600",
+     "dy": "1300",
+     "grid": "1",
+     "gridSize": "10",
+     "guides": "1",
+     "tooltips": "1",
+     "connect": "1",
+     "arrows": "1",
+     "fold": "1",
+     "page": "1",
+     "pageScale": "1",
+     "pageWidth": "1654",
+     "pageHeight": "1350",
+     "math": "0",
+     "shadow": "0",
+     "layers": [
+      {
+       "cells": [
+        {
+         "id": "0",
+         "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+         }
+        },
+        {
+         "id": "1",
+         "value": "",
+         "style": "",
+         "parent": "0",
+         "vertex": "1",
+         "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+         }
+        },
+        {
+         "id": "b1",
+         "value": "Runtime data path &#8212; NCAP_DVP=1  (real OV7670 pixels)",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#ffffff;strokeColor=#999999;strokeWidth=2;fontSize=14;fontStyle=1;spacingLeft=10;spacingTop=6;arcSize=4;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 40,
+          "y": 40,
+          "width": 1520,
+          "height": 250
+         }
+        },
+        {
+         "id": "b2",
+         "value": "Runtime data path &#8212; NCAP_DVP=0  (synthetic luma)",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#ffffff;strokeColor=#999999;strokeWidth=2;fontSize=14;fontStyle=1;spacingLeft=10;spacingTop=6;arcSize=4;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 40,
+          "y": 320,
+          "width": 1520,
+          "height": 150
+         }
+        },
+        {
+         "id": "b3",
+         "value": "Runtime data path &#8212; NCAP_VIDEO_UDP=0/2  (micro-ROS)",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#ffffff;strokeColor=#999999;strokeWidth=2;fontSize=14;fontStyle=1;spacingLeft=10;spacingTop=6;arcSize=4;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 40,
+          "y": 500,
+          "width": 1520,
+          "height": 150
+         }
+        },
+        {
+         "id": "b4",
+         "value": "Per-frame interaction sequence (DVP mode)",
+         "style": "rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#ffffff;strokeColor=#999999;strokeWidth=2;fontSize=14;fontStyle=1;spacingLeft=10;spacingTop=6;arcSize=4;",
+         "parent": "1",
+         "vertex": "1",
+         "geometry": {
+          "x": 40,
+          "y": 680,
+          "width": 1520,
+          "height": 430
+         }
+        },
+        {
+         "id": "s_ov",
+         "value": "OV7670<br/><font style='font-size:9px'>DVP: PCLK,VSYNC,HREF,D[7:0]<br/>YUYV, 2 byte/pixel</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "b1",
+         "vertex": "1",
+         "geometry": {
+          "x": 20,
+          "y": 50,
+          "width": 200,
+          "height": 90
+         }
+        },
+        {
+         "id": "s_dcmi",
+         "value": "DCMI<br/><font style='font-size:9px'>samples on PCLK edge<br/>packs 4 byte -&gt; DR (RM0090 13.8.11)</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "b1",
+         "vertex": "1",
+         "geometry": {
+          "x": 260,
+          "y": 50,
+          "width": 200,
+          "height": 90
+         }
+        },
+        {
+         "id": "s_dma",
+         "value": "DMA2 Stream1<br/><font style='font-size:9px'>periph-&gt;mem, word-wide<br/>NDTR = frame_bytes/4</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
+         "parent": "b1",
+         "vertex": "1",
+         "geometry": {
+          "x": 500,
+          "y": 50,
+          "width": 190,
+          "height": 90
+         }
+        },
+        {
+         "id": "s_ring",
+         "value": "dvp_ring[]<br/><font style='font-size:9px'>YUYV in, DVP_FRAMES slots<br/>76.8 KB @ QVGA luma-only</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;",
+         "parent": "b1",
+         "vertex": "1",
+         "geometry": {
+          "x": 730,
+          "y": 50,
+          "width": 195,
+          "height": 90
+         }
+        },
+        {
+         "id": "s_strip",
+         "value": "dvp_strip_in_place()<br/><font style='font-size:9px'>keeps even bytes (Y)<br/>discards Cb/Cr in place</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;",
+         "parent": "b1",
+         "vertex": "1",
+         "geometry": {
+          "x": 965,
+          "y": 50,
+          "width": 200,
+          "height": 90
+         }
+        },
+        {
+         "id": "s_vid",
+         "value": "video_udp_step()<br/><font style='font-size:9px'>HDR_LEN=20 row blocks<br/>ROWS_PER_DGRAM=(1400-20)/W</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;",
+         "parent": "b1",
+         "vertex": "1",
+         "geometry": {
+          "x": 1205,
+          "y": 50,
+          "width": 200,
+          "height": 90
+         }
+        },
+        {
+         "id": "s_wiz",
+         "value": "W5500 socket 1<br/><font style='font-size:9px'>sendto() 4 KB TXBUF<br/>Sn_TX_FSR spin</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "b1",
+         "vertex": "1",
+         "geometry": {
+          "x": 1205,
+          "y": 155,
+          "width": 200,
+          "height": 75
+         }
+        },
+        {
+         "id": "s_udp",
+         "value": "UDP 127.0.0.1:18080+n",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "b1",
+         "vertex": "1",
+         "geometry": {
+          "x": 1010,
+          "y": 155,
+          "width": 180,
+          "height": 75
+         }
+        },
+        {
+         "id": "s_cli",
+         "value": "video_client.py<br/><font style='font-size:9px'>reassemble + verify</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#b0e3e6;strokeColor=#0e8088;",
+         "parent": "b1",
+         "vertex": "1",
+         "geometry": {
+          "x": 790,
+          "y": 155,
+          "width": 200,
+          "height": 75
+         }
+        },
+        {
+         "id": "s_view",
+         "value": "VfrUdpViewer (optional)<br/><font style='font-size:9px'>microk3 dashboard</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;",
+         "parent": "b1",
+         "vertex": "1",
+         "geometry": {
+          "x": 570,
+          "y": 155,
+          "width": 200,
+          "height": 75
+         }
+        },
+        {
+         "id": "y_synth",
+         "value": "synth_line()<br/><font style='font-size:9px'>ramp + walking band + bar<br/>row-at-a-time, no frame buffer</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;",
+         "parent": "b2",
+         "vertex": "1",
+         "geometry": {
+          "x": 260,
+          "y": 50,
+          "width": 220,
+          "height": 80
+         }
+        },
+        {
+         "id": "y_vid",
+         "value": "video_udp_step()<br/><font style='font-size:9px'>same framing, synthetic rows</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;",
+         "parent": "b2",
+         "vertex": "1",
+         "geometry": {
+          "x": 520,
+          "y": 50,
+          "width": 200,
+          "height": 80
+         }
+        },
+        {
+         "id": "y_wiz",
+         "value": "W5500 socket 1",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "b2",
+         "vertex": "1",
+         "geometry": {
+          "x": 760,
+          "y": 50,
+          "width": 180,
+          "height": 80
+         }
+        },
+        {
+         "id": "y_udp",
+         "value": "UDP :18080",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "b2",
+         "vertex": "1",
+         "geometry": {
+          "x": 980,
+          "y": 50,
+          "width": 150,
+          "height": 80
+         }
+        },
+        {
+         "id": "y_cli",
+         "value": "video_client.py",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#b0e3e6;strokeColor=#0e8088;",
+         "parent": "b2",
+         "vertex": "1",
+         "geometry": {
+          "x": 1170,
+          "y": 50,
+          "width": 180,
+          "height": 80
+         }
+        },
+        {
+         "id": "r_imu",
+         "value": "IMU timer /heartbeat<br/><font style='font-size:9px'>PUB_PERIOD 1000 ms</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;",
+         "parent": "b3",
+         "vertex": "1",
+         "geometry": {
+          "x": 20,
+          "y": 45,
+          "width": 190,
+          "height": 80
+         }
+        },
+        {
+         "id": "r_ex",
+         "value": "rclc_executor_spin_some()<br/><font style='font-size:9px'>5 s bounded slice (mode 2)</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;",
+         "parent": "b3",
+         "vertex": "1",
+         "geometry": {
+          "x": 250,
+          "y": 45,
+          "width": 210,
+          "height": 80
+         }
+        },
+        {
+         "id": "r_ros",
+         "value": "libmicroros<br/><font style='font-size:9px'>pool 40 KB static RMW</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;",
+         "parent": "b3",
+         "vertex": "1",
+         "geometry": {
+          "x": 500,
+          "y": 45,
+          "width": 180,
+          "height": 80
+         }
+        },
+        {
+         "id": "r_xrce",
+         "value": "w5500_transport.c<br/><font style='font-size:9px'>XRCE datagrams, MTU 1472</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;",
+         "parent": "b3",
+         "vertex": "1",
+         "geometry": {
+          "x": 720,
+          "y": 45,
+          "width": 200,
+          "height": 80
+         }
+        },
+        {
+         "id": "r_s0",
+         "value": "W5500 socket 0",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "b3",
+         "vertex": "1",
+         "geometry": {
+          "x": 960,
+          "y": 45,
+          "width": 160,
+          "height": 80
+         }
+        },
+        {
+         "id": "r_udp",
+         "value": "UDP :5000 -&gt; agent :8888",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
+         "parent": "b3",
+         "vertex": "1",
+         "geometry": {
+          "x": 1160,
+          "y": 45,
+          "width": 180,
+          "height": 80
+         }
+        },
+        {
+         "id": "r_agent",
+         "value": "micro-ROS agent<br/><font style='font-size:9px'>/heartbeat, /imu/data</font>",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;",
+         "parent": "b3",
+         "vertex": "1",
+         "geometry": {
+          "x": 1360,
+          "y": 45,
+          "width": 150,
+          "height": 80
+         }
+        },
+        {
+         "id": "q1",
+         "value": "1. sensor clocks<br/>PCLK bytes; DCMI<br/>packs words, requests DMA",
+         "style": "shape=ext;double=1;rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffffff;strokeColor=#82b366;",
+         "parent": "b4",
+         "vertex": "1",
+         "geometry": {
+          "x": 20,
+          "y": 50,
+          "width": 175,
+          "height": 70
+         }
+        },
+        {
+         "id": "q2",
+         "value": "2. DMA fills slot<br/>M0AR + NDTR",
+         "style": "shape=ext;double=1;rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffffff;strokeColor=#82b366;",
+         "parent": "b4",
+         "vertex": "1",
+         "geometry": {
+          "x": 225,
+          "y": 50,
+          "width": 155,
+          "height": 70
+         }
+        },
+        {
+         "id": "q3",
+         "value": "3. VSYNC edge at<br/>frame end: DCMI sets<br/>RIS.FRAME, IRQ to nvic@78",
+         "style": "shape=ext;double=1;rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffffff;strokeColor=#82b366;",
+         "parent": "b4",
+         "vertex": "1",
+         "geometry": {
+          "x": 410,
+          "y": 50,
+          "width": 165,
+          "height": 70
+         }
+        },
+        {
+         "id": "q4",
+         "value": "4. DCMI_IRQHandler:<br/>publish slot, advance<br/>write_slot, re-arm DMA",
+         "style": "shape=ext;double=1;rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffffff;strokeColor=#82b366;",
+         "parent": "b4",
+         "vertex": "1",
+         "geometry": {
+          "x": 605,
+          "y": 50,
+          "width": 170,
+          "height": 70
+         }
+        },
+        {
+         "id": "q5",
+         "value": "5. DCMI stops capture<br/>(snapshot CM) until<br/>next frame start",
+         "style": "shape=ext;double=1;rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffffff;strokeColor=#82b366;",
+         "parent": "b4",
+         "vertex": "1",
+         "geometry": {
+          "x": 805,
+          "y": 50,
+          "width": 155,
+          "height": 70
+         }
+        },
+        {
+         "id": "q6",
+         "value": "6. take_frame(): strip<br/>Y in place, set pointer<br/>(main loop, not ISR)",
+         "style": "shape=ext;double=1;rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffffff;strokeColor=#82b366;",
+         "parent": "b4",
+         "vertex": "1",
+         "geometry": {
+          "x": 990,
+          "y": 50,
+          "width": 170,
+          "height": 70
+         }
+        },
+        {
+         "id": "q7",
+         "value": "7. video_udp_step()<br/>copies ROWS_PER_DGRAM<br/>rows + 20 B header",
+         "style": "shape=ext;double=1;rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffffff;strokeColor=#82b366;",
+         "parent": "b4",
+         "vertex": "1",
+         "geometry": {
+          "x": 1190,
+          "y": 50,
+          "width": 160,
+          "height": 70
+         }
+        },
+        {
+         "id": "q8",
+         "value": "8. sendto() per block;<br/>deadline pacer to VIDEO_FPS",
+         "style": "shape=ext;double=1;rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffffff;strokeColor=#82b366;",
+         "parent": "b4",
+         "vertex": "1",
+         "geometry": {
+          "x": 1380,
+          "y": 50,
+          "width": 130,
+          "height": 70
+         }
+        },
+        {
+         "id": "q9",
+         "value": "Invariant that keeps it aligned:<br/>a frame slot is re-armed <b>at the frame boundary</b>.<br/>QVGA luma-only / QQVGA &#8594; slot == one sensor frame &#8594; self-aligning (verified).<br/>Any <b>crop</b> &#8594; slot &lt; sensor frame &#8594; software re-arm must hit the boundary exactly (unreliable in Renode).",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;spacingLeft=8;spacingTop=6;",
+         "parent": "b4",
+         "vertex": "1",
+         "geometry": {
+          "x": 20,
+          "y": 150,
+          "width": 760,
+          "height": 90
+         }
+        },
+        {
+         "id": "q10",
+         "value": "Timing budget @ 320x240, VIDEO_FPS=24:<br/>period 41.7 ms &#183; SPI 22.5 MHz (/4) &#8594; ~29 ms of 81.4 KB SPI traffic<br/>pacer = 1000/VIDEO_FPS ms deadline, overruns drop debt instead of cascading<br/>measured 24.00 fps emulated; host-observed ~0.1 fps is Renode throughput, not firmware<br/>host-observed rate &#8800; emulated rate &#8212; always report the emulated one.",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;spacingLeft=8;spacingTop=6;",
+         "parent": "b4",
+         "vertex": "1",
+         "geometry": {
+          "x": 810,
+          "y": 150,
+          "width": 700,
+          "height": 90
+         }
+        },
+        {
+         "id": "q11",
+         "value": "Buffer arithmetic (why QVGA YUV422 is impossible):<br/>YUV422 = 2 byte/pixel &#8594; 320x240 = 153,600 B &gt; 128 KB RAM (fails at link: <i>region RAM overflowed</i>)<br/>luma-only via DCMI byte select = 1 byte/pixel &#8594; 76,800 B &#8594; fits<br/>QQVGA 160x120 YUV422 = 38,400 B/frame &#8594; 2-frame ring = 76,800 B &#8594; verified<br/>OV7670 has no YUV420; F4 DCMI has no CGR/CCMR &#8594; chroma must be stripped on the CPU.",
+         "style": "rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;spacingLeft=8;spacingTop=6;",
+         "parent": "b4",
+         "vertex": "1",
+         "geometry": {
+          "x": 20,
+          "y": 265,
+          "width": 1490,
+          "height": 105
+         }
+        },
+        {
+         "id": "f1",
+         "value": "parallel bus",
+         "parent": "1",
+         "edge": "1",
+         "source": "s_ov",
+         "target": "s_dcmi",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "f2",
+         "value": "DMA request / word",
+         "parent": "1",
+         "edge": "1",
+         "source": "s_dcmi",
+         "target": "s_dma",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "f3",
+         "value": "DMA2 Stream1",
+         "parent": "1",
+         "edge": "1",
+         "source": "s_dma",
+         "target": "s_ring",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "f4",
+         "value": "captured frame",
+         "parent": "1",
+         "edge": "1",
+         "source": "s_ring",
+         "target": "s_strip",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "f5",
+         "value": "luma rows",
+         "parent": "1",
+         "edge": "1",
+         "source": "s_strip",
+         "target": "s_vid",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "f6",
+         "value": "sendto()",
+         "parent": "1",
+         "edge": "1",
+         "source": "s_vid",
+         "target": "s_wiz",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "f7",
+         "value": "Ethernet + UDP",
+         "parent": "1",
+         "edge": "1",
+         "source": "s_wiz",
+         "target": "s_udp",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "f8",
+         "value": "datagrams",
+         "parent": "1",
+         "edge": "1",
+         "source": "s_udp",
+         "target": "s_cli",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "f9",
+         "value": "optional consumer",
+         "parent": "1",
+         "edge": "1",
+         "source": "s_cli",
+         "target": "s_view",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "g1",
+         "value": "generated rows",
+         "parent": "1",
+         "edge": "1",
+         "source": "y_synth",
+         "target": "y_vid",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "g2",
+         "value": "sendto()",
+         "parent": "1",
+         "edge": "1",
+         "source": "y_vid",
+         "target": "y_wiz",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "g3",
+         "value": "UDP",
+         "parent": "1",
+         "edge": "1",
+         "source": "y_wiz",
+         "target": "y_udp",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "g4",
+         "value": "datagrams",
+         "parent": "1",
+         "edge": "1",
+         "source": "y_udp",
+         "target": "y_cli",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "h1",
+         "value": "timer / publish",
+         "parent": "1",
+         "edge": "1",
+         "source": "r_imu",
+         "target": "r_ex",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "h2",
+         "value": "messages",
+         "parent": "1",
+         "edge": "1",
+         "source": "r_ex",
+         "target": "r_ros",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "h3",
+         "value": "serialise",
+         "parent": "1",
+         "edge": "1",
+         "source": "r_ros",
+         "target": "r_xrce",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "h4",
+         "value": "socket 0",
+         "parent": "1",
+         "edge": "1",
+         "source": "r_xrce",
+         "target": "r_s0",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "h5",
+         "value": "Ethernet + UDP",
+         "parent": "1",
+         "edge": "1",
+         "source": "r_s0",
+         "target": "r_udp",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "h6",
+         "value": "XRCE",
+         "parent": "1",
+         "edge": "1",
+         "source": "r_udp",
+         "target": "r_agent",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "k1",
+         "value": "",
+         "parent": "1",
+         "edge": "1",
+         "source": "q1",
+         "target": "q2",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "k2",
+         "value": "",
+         "parent": "1",
+         "edge": "1",
+         "source": "q2",
+         "target": "q3",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "k3",
+         "value": "",
+         "parent": "1",
+         "edge": "1",
+         "source": "q3",
+         "target": "q4",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "k4",
+         "value": "",
+         "parent": "1",
+         "edge": "1",
+         "source": "q4",
+         "target": "q5",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "k5",
+         "value": "",
+         "parent": "1",
+         "edge": "1",
+         "source": "q5",
+         "target": "q6",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "k6",
+         "value": "",
+         "parent": "1",
+         "edge": "1",
+         "source": "q6",
+         "target": "q7",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        },
+        {
+         "id": "k7",
+         "value": "",
+         "parent": "1",
+         "edge": "1",
+         "source": "q7",
+         "target": "q8",
+         "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;horizontalLabelPosition=right;labelOffset=14;labelPadding=6;spacing=2;endArrow=block;",
+         "geometry": {
+          "relative": "1"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ }
+}

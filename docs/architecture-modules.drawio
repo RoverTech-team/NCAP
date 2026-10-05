@@ -1,0 +1,394 @@
+<mxfile host="Electron" agent="NCAP docs">
+  <diagram id="ncap-modules" name="Modules">
+    <mxGraphModel dx="3571" dy="2586" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2100" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="gRen" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;" value="Renode peripheral models  &lt;font style=&#39;font-size:10px&#39;&gt;(renode_configs/peripherals/)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="300" width="560" x="40" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="mW5500" parent="gRen" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="W5500.cs&#xa;SPI Ethernet&#xa;16 KB TX/RX per socket" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="mOV76" parent="gRen" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="OV7670.cs&#xa;SCCB regs + DVP bus&#xa;PCLK/VSYNC/HREF/D0-D7" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="mDCMI" parent="gRen" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Dcmi.cs&#xa;RM0090 ch.13 map&#xa;no CGR/CCMR on F4" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="mTest" parent="gRen" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="W5500_model/ tests&#xa;EthernetTests.cs" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="gRepl" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;" value="Board description  &lt;font style=&#39;font-size:10px&#39;&gt;(renode_configs/platforms/boards/)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="170" width="560" x="40" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="bRepl" parent="gRepl" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="stm32f4_w5500.repl&#xa;w5500 @ spi2 · dcmi @ sysbus 0x50050000&#xa;ov7670 @ i2c1 0x21 · DMAReceive -&gt; dma2@1&#xa;IRQ -&gt; nvic@78 · StreamEnable -&gt; ov7670@0" vertex="1">
+          <mxGeometry height="120" width="260" x="22" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="gApp" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;" value="Application firmware  &lt;font style=&#39;font-size:10px&#39;&gt;(firmware/)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="500" width="560" x="40" y="1010" as="geometry" />
+        </mxCell>
+        <mxCell id="aMain" parent="gApp" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="main.c&#xa;personality 0/1/2&#xa;SystemClock_Config" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="aDVP" parent="gApp" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="ov7670_dvp.c / .h&#xa;DCMI + DMA2 -&gt; ring&#xa;in-place Y strip" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="aI2C" parent="gApp" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="i2c1.c&#xa;I2C1 master&#xa;400 kHz fast mode" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="412" as="geometry" />
+        </mxCell>
+        <mxCell id="aVid" parent="gApp" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="video_udp.c&#xa;framing + deadline pacer&#xa;VIDEO_FPS target" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="aOV" parent="gApp" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="ov7670.c&#xa;SCCB init, COM7 YUV422&#xa;COM3/COM14 scaling" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="aIMU" parent="gApp" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="imu.c&#xa;LSM9DS1 accel/gyro/mag&#xa;sensor_msgs/Imu" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="412" as="geometry" />
+        </mxCell>
+        <mxCell id="gPlat" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#eef3ff;strokeColor=#6c8ebf;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;" value="Renode built-in platform  &lt;font style=&#39;font-size:10px&#39;&gt;(Renode install)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="340" width="560" x="1022" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="pCPU" parent="gPlat" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="STM32F4 CPU&#xa;Cortex-M4" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="pSPI" parent="gPlat" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="SPI.STM32SPI&#xa;spi1 / spi2" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="pI2C" parent="gPlat" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="I2C.STM32F1_I2C&#xa;i2c1 @ 0x54" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="pUART" parent="gPlat" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="UART.STM32_UART&#xa;usart2 debug" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="gCube" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;" value="CubeMX-generated HAL glue" vertex="1">
+          <mxGeometry height="300" width="560" x="1022" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="pBUF" parent="gCube" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="Memory / Cortex-M4&#xa;NVIC" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="36" as="geometry" />
+        </mxCell>
+        <mxCell id="pLED" parent="gCube" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="LED x2 (Green/Red)" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="36" as="geometry" />
+        </mxCell>
+        <mxCell id="cClk" parent="gCube" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="system_clock.c&#xa;SystemClock_Config()&#xa;168 MHz" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="cSpi" parent="gCube" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="spi.c&#xa;MX_SPI1/2_Init&#xa;SPI2 = /4" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="cIt" parent="gCube" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="stm32f4xx_it.c&#xa;DCMI_IRQHandler&#xa;SysTick_Handler" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="cUs" parent="gCube" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="usart.c&#xa;115200" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="g3rd" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;" value="Third-party / prebuilt" vertex="1">
+          <mxGeometry height="240" width="560" x="1022" y="1030" as="geometry" />
+        </mxCell>
+        <mxCell id="cDma" parent="g3rd" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="dma.c" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="cTim" parent="g3rd" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="tim.c / gpio.c" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tLib" parent="g3rd" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value="ioLibrary/&#xa;socket.c · W5500/w5500.c&#xa;sendto() clips to TX_FSR" vertex="1">
+          <mxGeometry height="90" width="270" x="22" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="tROS" parent="g3rd" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value="libmicroros.a + headers&#xa;rclc_executor_spin_some()" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="gHost" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;" value="Host tooling  &lt;font style=&#39;font-size:10px&#39;&gt;(scripts/)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="360" width="560" x="2004" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="hRun" parent="gHost" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="run_video.sh&#xa;build + Renode&#xa;+ verify" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="hRun5" parent="gHost" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="run_5node_video.sh&#xa;N streams" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="hCli" parent="gHost" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="video_client.py&#xa;reassemble+verify&#xa;WANT, VID_TIMEOUT" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="hRel" parent="gHost" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="udp_relay.py&#xa;port forward" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="gExt" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;" value="External consumers" vertex="1">
+          <mxGeometry height="210" width="560" x="2004" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="eAgent" parent="gExt" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" value="micro-ROS agent&#xa;udp/8888" vertex="1">
+          <mxGeometry height="88" width="230" x="22" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="eView" parent="gExt" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" value="microk3/vfr_stream.py&#xa;VfrUdpViewer -&gt; JPEG&#xa;Flask dashboard" vertex="1">
+          <mxGeometry height="88" width="230" x="424" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="aWiz" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="wizchip_port.c&#xa;SPI2 burst R/W&#xa;64-byte chunks&#xa;CS=PB12 RST=PB11" vertex="1">
+          <mxGeometry height="88" width="230" x="62" y="1606" as="geometry" />
+        </mxCell>
+        <mxCell id="aXRCE" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="w5500_transport.c&#xa;micro-ROS XRCE&#xa;socket 0" vertex="1">
+          <mxGeometry height="88" width="230" x="464" y="1606" as="geometry" />
+        </mxCell>
+        <mxCell id="pDMA" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="DMA.STM32DMA&#xa;dma1/dma2&#xa;CIRC tagged+ignored" vertex="1">
+          <mxGeometry height="88" width="230" x="1044" y="492" as="geometry" />
+        </mxCell>
+        <mxCell id="pGPIO" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="BaseGPIOPort&#xa;gpioPortA..D" vertex="1">
+          <mxGeometry height="88" width="230" x="1446" y="492" as="geometry" />
+        </mxCell>
+        <mxCell id="tSVD" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value="CMSIS stm32f446xx.h&#xa;DCMI_TypeDef" vertex="1">
+          <mxGeometry height="88" width="230" x="1044" y="1258" as="geometry" />
+        </mxCell>
+        <mxCell id="tHAL" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value="STM32F4xx HAL&#xa;(no HAL_DCMI)" vertex="1">
+          <mxGeometry height="88" width="230" x="1446" y="1258" as="geometry" />
+        </mxCell>
+        <mxCell id="hProbe" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="fps / ramp probes&#xa;independent pixel&#xa;verification" vertex="1">
+          <mxGeometry height="88" width="230" x="2026" y="492" as="geometry" />
+        </mxCell>
+        <mxCell id="hUdp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="host UDP stack&#xa;127.0.0.1:18080+n" vertex="1">
+          <mxGeometry height="88" width="230" x="2428" y="492" as="geometry" />
+        </mxCell>
+        <mxCell id="eRss" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" value="ROS topics&#xa;/heartbeat, /imu/data" vertex="1">
+          <mxGeometry height="88" width="230" x="2026" y="878" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;spacingLeft=8;spacingTop=6;align=left;" value="&lt;b&gt;Design notes&lt;/b&gt;&lt;br/&gt;&amp;#8226; W5500 sits on &lt;b&gt;spi2&lt;/b&gt; (PB13/14/15, CS PB12, RST PB11) because DCMI hard-owns PA4 (VSYNC) and PA6 (PIXCLK) with no remap available.&lt;br/&gt;&amp;#8226; STM32F4 DCMI has &lt;b&gt;no CGR/CCMR&lt;/b&gt;, so chroma is stripped on the CPU; BSM/OEBS at CR 16-18 are reserved per RM0090.&lt;br/&gt;&amp;#8226; The OV7670 has &lt;b&gt;no YUV420&lt;/b&gt; mode - 8-bit outputs are YUV422 / RGB / GRB 4:2:2 / Raw - so QVGA YUV422 (153600 B) cannot fit 128 KB RAM.&lt;br/&gt;&amp;#8226; Socket 0 = micro-ROS, socket 1 = video. Every cross-container edge runs in a gutter between containers; edges inside one container run in the gaps between boxes.&lt;br/&gt;&amp;#8226; Parallel edges are held at least 24 px apart so individual lines stay traceable.&lt;br/&gt;&amp;#8226; Tests: renode-test robot suite plus the standalone W5500 model project." vertex="1">
+          <mxGeometry height="140" width="2530" x="70" y="1840" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="mW5500" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bRepl" value="SPI2 bus">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="177" y="471" />
+              <mxPoint x="192" y="471" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="mOV76" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bRepl" value="DVP bus + SCCB">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="579" y="495" />
+              <mxPoint x="205" y="495" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="mDCMI" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bRepl" value="sysbus 0x50050000">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="177" y="519" />
+              <mxPoint x="218" y="519" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="bRepl" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="pSPI" value="instantiated on">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="437" y="714" />
+              <mxPoint x="437" y="168" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="bRepl" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="pI2C" value="instantiated on">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="461" y="727" />
+              <mxPoint x="461" y="352" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="bRepl" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="pDMA" value="DMAReceive -&gt; dma2@1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="485" y="740" />
+              <mxPoint x="485" y="536" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="mOV76" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="aI2C" value="SCCB writes (0x21)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="592" y="683" />
+              <mxPoint x="177" y="683" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="mDCMI" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="aDVP" value="register R/W">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="190" y="707" />
+              <mxPoint x="177" y="707" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="mDCMI" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="pDMA" value="DR request/word">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="763" y="352" />
+              <mxPoint x="763" y="536" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="aDVP" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="aVid" value="captured frame">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="318" y="1282" />
+              <mxPoint x="318" y="1098" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="aOV" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="aDVP" value="init + geometry">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="342" y="1282" />
+              <mxPoint x="342" y="1295" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="aVid" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="aWiz" value="sendto()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="366" y="1111" />
+              <mxPoint x="366" y="1650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="aWiz" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="tLib" value="callback struct">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="787" y="1663" />
+              <mxPoint x="787" y="1119" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="tLib" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="mW5500" value="SPI frames">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="aXRCE" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="tROS" value="rmw_uros_set_custom_transport">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="811" y="1650" />
+              <mxPoint x="811" y="1118" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="aXRCE" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="tLib" value="socket 0">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="835" y="1663" />
+              <mxPoint x="835" y="1145" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e17" edge="1" parent="1" source="aMain" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="aVid" value="NCAP_VIDEO_UDP">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="390" y="1098" />
+              <mxPoint x="390" y="1124" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e18" edge="1" parent="1" source="aMain" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="aDVP" value="NCAP_DVP">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="177" y="1190" />
+              <mxPoint x="190" y="1190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e19" edge="1" parent="1" source="aMain" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="aXRCE" value="NCAP_VIDEO_UDP=0/2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="414" y="1111" />
+              <mxPoint x="414" y="1650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e20" edge="1" parent="1" source="aMain" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="cClk" value="SystemClock_Config">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e21" edge="1" parent="1" source="aVid" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="cSpi" value="SPI2 /4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e22" edge="1" parent="1" source="aWiz" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="cSpi" value="hspi2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" edge="1" parent="1" source="aIMU" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="aI2C" value="WHO_AM_I / bursts">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="438" y="1466" />
+              <mxPoint x="438" y="1466" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e24" edge="1" parent="1" source="cIt" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="aDVP" value="DCMI_IRQHandler">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e25" edge="1" parent="1" source="aDVP" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="tSVD" value="DCMI_TypeDef">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="859" y="1308" />
+              <mxPoint x="859" y="1302" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e26" edge="1" parent="1" source="hRun" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="pCPU" value="Renode emulation">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1793" y="168" />
+              <mxPoint x="1793" y="168" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e27" edge="1" parent="1" source="hRun" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="aMain" value="make + LoadELF">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e28" edge="1" parent="1" source="hRun" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="hCli" value="launches receiver">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2141" y="248" />
+              <mxPoint x="2141" y="248" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e29" edge="1" parent="1" source="hRun5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="hRel" value="per-node verify">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2543" y="272" />
+              <mxPoint x="2543" y="272" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e30" edge="1" parent="1" source="hCli" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="hUdp" value="receives">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2330" y="352" />
+              <mxPoint x="2330" y="536" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e31" edge="1" parent="1" source="hProbe" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="hUdp" value="independent check">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2354" y="536" />
+              <mxPoint x="2354" y="549" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e32" edge="1" parent="1" source="hUdp" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="eView" value="optional consumer">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2543" y="533" />
+              <mxPoint x="2543" y="533" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e33" edge="1" parent="1" source="hUdp" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="eAgent" value="XRCE on 8888">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2556" y="557" />
+              <mxPoint x="2141" y="557" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e34" edge="1" parent="1" source="aXRCE" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="pUART" value="debug log">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

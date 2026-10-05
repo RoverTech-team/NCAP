@@ -1,22 +1,65 @@
 using "platforms/cpus/stm32f4.repl"
 
 // STM32F4 + WIZnet W5500 (SPI Ethernet) board.
-// W5500 is a custom ISPIPeripheral loaded via:
-//   include @renode_configs/peripherals/W5500.cs
-// SPI1 on STM32F4 (SCK PA5 / MISO PA6 / MOSI PA7) is the W5500 bus.
-// W5500 control lines (all active low):
-//   SCSn -> PA4  (w5500@0)  delimits Variable-Length Data mode SPI frames
-//   RSTn -> PA3  (w5500@1)  hardware reset
-//   INTn <- PB1              interrupt to MCU (model output)
+//
+// The W5500 sits on SPI2, NOT SPI1. DCMI owns PA4/PA6 on this MCU and those
+// pins are hard-wired to DCMI_VSYNC / DCMI_PIXCLK with no remap available, so
+// SPI1 (PA5/PA6/PA7 + PA4 SCSn) cannot coexist with camera capture.
+//   SPI2: PB13=SCK, PB14=MISO, PB15=MOSI, PB12=SCSn, PB11=RSTn
+//   W5500 control lines (all active low):
+//     SCSn -> PB12 (w5500@0)  delimits Variable-Length Data mode SPI frames
+//     RSTn -> PB11 (w5500@1)  hardware reset
+//     INTn <- PB1             interrupt to MCU (model output)
+//
+// The OV7670 streams over its DVP parallel bus into a software-modelled DCMI.
+// Pin map (DCMI is AF13 only, no remap):
+//   DCMI_PIXCLK <- PA6      DCMI_VSYNC <- PA4     DCMI_HREF <- PA17
+//   DCMI_D0..D5  <- PC6..PC11                    DCMI_D6 <- PC12  DCMI_D7 <- PD6
+// NOTE: PC11 is also USART3_TX on some boards; keep USART2 (PA2/PA3) for the
+// debug UART, as this project does, to avoid a clash.
 
-w5500: Network.W5500 @ spi1
+w5500: Network.W5500 @ spi2
     LoopbackMode: false
     EnableHostSockets: true
     -> gpioPortB@1
 
-gpioPortA:
-    4 -> w5500@0
-    3 -> w5500@1
+// ---- DVP capture: OV7670 parallel bus -> DCMI -> DMA2 ----
+
+// The OV7670 drives 11 signals. DCMI input indices (see Dcmi.cs):
+//   0 PIXCLK, 1 VSYNC, 2 HREF, 3..10 = D0..D7
+// The DCMI pulls the sensor's StreamEnable input (index 0) high when armed so
+// an un-captured sensor does not burn simulation time clocking into nowhere.
+dcmi: Sensors.Dcmi @ sysbus <0x50050000, +0x2C>
+    StreamEnable-> ov7670@0
+
+ov7670: Sensors.OV7670 @ i2c1 0x21
+    PCLK-> dcmi@0
+    VSYNC-> dcmi@1
+    HREF-> dcmi@2
+    D0-> dcmi@3
+    D1-> dcmi@4
+    D2-> dcmi@5
+    D3-> dcmi@6
+    D4-> dcmi@7
+    D5-> dcmi@8
+    D6-> dcmi@9
+    D7-> dcmi@10
+
+// DCMI_DR is the DMA2 source for captured bytes; same Blink handshake the
+// SPI receive path uses.
+dcmi:
+    DMAReceive-> dma2@1
+
+dcmi:
+    IRQ-> nvic@78
+
+// SCCB (I2C1, SCL PB6 / SDA PB7) is shared by the OV7670, the IMU and is
+// multi-drop, so there is no conflict. Pixel readout over SCCB is NOT
+// possible on real silicon; only DVP above carries pixels.
+
+gpioPortB:
+    12 -> w5500@0
+    11 -> w5500@1
 
 // ST LSM9DS1 9-axis IMU (accel+gyro die at 0x6B, magnetometer die at 0x1E).
 // Both are II2CPeripheral models shipped with Renode; no custom code needed.
@@ -24,13 +67,6 @@ gpioPortA:
 // register-level master (the F1/F4 I2C is compatible for basic master use).
 lsm9ds1_imu: Sensors.LSM9DS1_IMU @ i2c1 0x6b
 lsm9ds1_mag: Sensors.LSM9DS1_Magnetic @ i2c1 0x1e
-
-// OmniVision OV7670 camera (custom SCCB model).
-// Any .resc loading this board must `include @renode_configs/peripherals/OV7670.cs` first.
-// SCCB address 0x21. Shares i2c1 with the IMU; I2C is multi-drop so there is
-// no conflict. Pixel readout is via test registers (see OV7670.cs) until a
-// parallel-bus capture path exists.
-ov7670: Sensors.OV7670 @ i2c1 0x21
 
 GreenLED: Miscellaneous.LED @ gpioPortD
 RedLED: Miscellaneous.LED @ gpioPortD

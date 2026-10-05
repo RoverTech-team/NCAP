@@ -26,6 +26,19 @@ static uint32_t pclk1_hz(void)
     return SystemCoreClock / div[ppre1];
 }
 
+// SCL target for SCCB/IMU traffic. 100 kHz standard mode was pinned here;
+// 400 kHz fast mode is the highest speed that is reliably in spec for both
+// the OV7670 and the LSM9DS1 sharing this bus.
+//
+// Note this does NOT make the camera path fast enough for 24 fps: a QVGA
+// luma frame is 76,800 bytes = 691,200 SCL pulses, which is 1.73 s/frame at
+// 400 kHz (0.58 fps). The F446 I2C peripheral tops out near 1 MHz, which
+// still only reaches ~1.45 fps. Reaching tens of fps needs the OV7670's
+// parallel DVP output, not a faster SCCB clock.
+#ifndef I2C_SCL_HZ
+#define I2C_SCL_HZ  400000u
+#endif
+
 void i2c1_init(void)
 {
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
@@ -54,9 +67,21 @@ void i2c1_init(void)
         freq_mhz = 50u;
     }
     I2C1->CR2 = freq_mhz & 0x3Fu;
-    // Standard mode 100 kHz: CCR = PCLK1 / (2 * 100000).
-    I2C1->CCR = pclk1 / (2u * 100000u);
-    I2C1->TRISE = freq_mhz + 1u;
+    // CCR selects SCL from PCLK1. Duty cycle 2 (Tlow = 2*Thigh), which is
+    // valid for both standard (CCR >= 50) and fast mode (CCR >= 13).
+    I2C1->CCR = pclk1 / (2u * I2C_SCL_HZ);
+    // TRISE is the max rise-time allowance in PCLK1 cycles. Standard mode
+    // uses 300ns * f_PCLK(MHz) + 1; fast mode uses the RM0090 expression
+    // 300ns / (1/SCL - 300ns) + 1, floored at 1.
+    uint32_t trise = (300u * freq_mhz) / 1000u + 1u;
+    if (I2C_SCL_HZ > 100000u)
+    {
+        uint32_t scl_ns = 1000000000u / I2C_SCL_HZ;
+        uint32_t tcyc_ns = 1000000000u / (freq_mhz * 1000000u);
+        uint32_t fast = (scl_ns > 300u) ? (300u * tcyc_ns / (scl_ns - 300u) + 1u) : 1u;
+        if (fast < trise) trise = fast;
+    }
+    I2C1->TRISE = (trise > 0x3Fu) ? 0x3Fu : (uint8_t)trise;
     I2C1->CR1 |= I2C_CR1_ACK;
     I2C1->CR1 |= I2C_CR1_PE;
 }

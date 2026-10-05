@@ -8,13 +8,14 @@
 # still bound to the port, and the client then silently talks to the OLD
 # simulation instead of the one just built.
 #
-# Usage: ./scripts/run_video.sh [port] [width] [height] [frames]
+# Usage: ./scripts/run_video.sh [port] [width] [height] [frames] [fps]
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PORT="${1:-18080}"
 W="${2:-320}"
 H="${3:-240}"
 FRAMES="${4:-3}"
+FPS="${5:-24}"
 
 # Stale receivers from an aborted run keep the UDP port bound, and a stale
 # Renode keeps answering on it - both silently target the wrong simulation.
@@ -30,9 +31,12 @@ fi
 
 # Makefile variable changes do not trigger recompiles on their own; the
 # flag-dependent translation units must be touched or the ELF stays stale.
-touch "$ROOT/firmware/Core/Src/main.c" "$ROOT/firmware/video_udp.c" "$ROOT/firmware/ov7670.c"
-make -C "$ROOT/firmware" NCAP_VIDEO_UDP=1 NCAP_OV7670="${OV7670:-0}" VIDEO_PORT="$PORT" \
-     VIDEO_HOST_IP=127.0.0.1 VIDEO_WIDTH="$W" VIDEO_HEIGHT="$H" \
+touch "$ROOT/firmware/Core/Src/main.c" "$ROOT/firmware/video_udp.c" "$ROOT/firmware/ov7670.c" \
+      "$ROOT/firmware/i2c1.c" "$ROOT/firmware/Core/Src/spi.c" \
+      "$ROOT/firmware/ov7670_dvp.c"
+make -C "$ROOT/firmware" NCAP_VIDEO_UDP=1 NCAP_DVP="${DVP:-0}" NCAP_OV7670="${OV7670:-0}" \
+     VIDEO_PORT="$PORT" VIDEO_HOST_IP=127.0.0.1 VIDEO_WIDTH="$W" VIDEO_HEIGHT="$H" \
+     VIDEO_FPS="$FPS" DVP_FRAMES="${DVP_FRAMES:-2}" DVP_YUV420="${DVP_YUV420:-0}" \
      MICRO_AGENT_IP=127.0.0.1 MICRO_AGENT_PORT=8888 MICRO_CLIENT_PORT=5000 >/dev/null
 
 UART="$(mktemp -t f4video)"
@@ -41,10 +45,11 @@ OUT="$(mktemp -t f4vid)"
 cat > "$RSCR" <<EOF
 include @renode_configs/peripherals/W5500.cs
 include @renode_configs/peripherals/OV7670.cs
+include @renode_configs/peripherals/Dcmi.cs
 mach create "f4"
 machine LoadPlatformDescription @renode_configs/platforms/boards/stm32f4_w5500.repl
 sysbus LoadELF @firmware/build/ncap_f4_w5500.elf
-logLevel 1
+logLevel 3
 sysbus.usart2 CreateFileBackend @$UART true
 start
 sleep 600

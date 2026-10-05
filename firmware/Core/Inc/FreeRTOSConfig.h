@@ -56,19 +56,38 @@
 #define CMSIS_device_header "stm32f4xx.h"
 #endif /* CMSIS_device_header */
 
+/* 0, and this is the one deviation from the plan (which asked for 1). FreeRTOS
+   V10.3.1 has no configENABLE_FPU option - grep the vendored kernel, nothing
+   reads it - so this cannot enable or disable FPU context save either way; it
+   is inert CubeMX legacy. 0 is also the value that describes this build: with
+   -mfloat-abi=soft (which the prebuilt libmicroros.a requires) GCC emits no FP
+   instructions at all, so no task ever has live VFP state to save. The ARM_CM4F
+   port saves d16-d31 unconditionally regardless of this value; see the note
+   next to PORT_FLOAT_ABI in firmware/Makefile for how it is assembled. */
 #define configENABLE_FPU                         0
 #define configENABLE_MPU                         0
 
 #define configUSE_PREEMPTION                     1
 #define configSUPPORT_STATIC_ALLOCATION          1
 #define configSUPPORT_DYNAMIC_ALLOCATION         1
-#define configUSE_IDLE_HOOK                      0
+/* 1: needed to derive CPU load from an idle-tick counter (sysusage). */
+#define configUSE_IDLE_HOOK                      1
 #define configUSE_TICK_HOOK                      0
 #define configCPU_CLOCK_HZ                       ( SystemCoreClock )
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
-#define configMAX_PRIORITIES                     ( 56 )
+/* 56 -> 8. This firmware has exactly three priorities: idle (0), the sysusage
+   sampler (1), and the rcl executor task (2). 56 is CubeMX legacy sized for the
+   robot-arm project that used to live here, and it costs 56 * sizeof(List_t) =
+   1120 B of pxReadyTasksLists whether used or not. */
+#define configMAX_PRIORITIES                     ( 8 )
 #define configMINIMAL_STACK_SIZE                 ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE                    ((size_t)15360)
+/* Cut 15360 -> 4096. Every task in this firmware is created statically with
+   xTaskCreateStatic, and nothing allocates from the heap at all, so the F446's
+   128 KB of RAM - already ~63 KB of data+bss - is not where 15 KB should go.
+   Note this is only free because --gc-sections drops ucHeap while no
+   xTaskCreate/xQueueCreate/xTimerCreate call exists; the first one puts the full
+   4096 B back at link time. */
+#define configTOTAL_HEAP_SIZE                    ((size_t)4096)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_TRACE_FACILITY                 1
 #define configUSE_16_BIT_TICKS                   0
@@ -87,8 +106,12 @@
 #define configUSE_CO_ROUTINES                    0
 #define configMAX_CO_ROUTINE_PRIORITIES          ( 2 )
 
-/* Software timer definitions. */
-#define configUSE_TIMERS                         1
+/* 1 -> 0. Nothing in this firmware calls xTimerCreate: the micro-ROS executor is
+   driven by rclc's own rcl_timer on the rcl task, and sysusage.c samples from
+   its own task. The daemon is pure cost - xTimerStack (1024 B), its TCB (92 B)
+   and its 10-entry command queue (~240 B), about 1356 B of .bss. Revisit
+   alongside configTOTAL_HEAP_SIZE if a software timer is ever needed. */
+#define configUSE_TIMERS                         0
 #define configTIMER_TASK_PRIORITY                ( 2 )
 #define configTIMER_QUEUE_LENGTH                 10
 #define configTIMER_TASK_STACK_DEPTH             256
@@ -111,7 +134,10 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelayUntil              1
 #define INCLUDE_vTaskDelay                   1
 #define INCLUDE_xTaskGetSchedulerState       1
-#define INCLUDE_xTimerPendFunctionCall       1
+/* Must be 0 while configUSE_TIMERS is 0: timers.c:42 hard-errors with
+   "#error configUSE_TIMERS must be set to 1 to make the xTimerPendFunctionCall()
+   function available." Nothing here calls it anyway. */
+#define INCLUDE_xTimerPendFunctionCall       0
 #define INCLUDE_xQueueGetMutexHolder         1
 #define INCLUDE_uxTaskGetStackHighWaterMark  1
 #define INCLUDE_xTaskGetCurrentTaskHandle    1

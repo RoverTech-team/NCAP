@@ -10,8 +10,12 @@ Library             OperatingSystem
 Setup F4 W5500
     Setup
     ${W5500_CS}=    Evaluate    os.path.abspath("${CURDIR}/../../peripherals/W5500.cs")    modules=os
+    ${OV7670_CS}=   Evaluate    os.path.abspath("${CURDIR}/../../peripherals/OV7670.cs")    modules=os
+    ${DCMI_CS}=     Evaluate    os.path.abspath("${CURDIR}/../../peripherals/Dcmi.cs")    modules=os
     ${BOARD}=      Evaluate    os.path.abspath("${CURDIR}/../../platforms/boards/stm32f4_w5500.repl")    modules=os
     Execute Command  include "${W5500_CS}"
+    Execute Command  include "${OV7670_CS}"
+    Execute Command  include "${DCMI_CS}"
     Execute Command  mach create "f4w5500"
     Execute Command  machine LoadPlatformDescription "${BOARD}"
     Execute Command  mach set "f4w5500"; start
@@ -22,16 +26,21 @@ Machine Boots
     Execute Command  mach set "f4w5500"
     Execute Command  sysbus ReadDoubleWord 0x08000000
 
-W5500 Attached To SPI1
+W5500 Attached To SPI2
     [Tags]    smoke
     Execute Command  mach set "f4w5500"
     ${tree}=  Execute Command  peripherals
     Should Contain  ${tree}  w5500
 
-SPI1 Registers Accessible
+SPI2 Registers Accessible
     [Tags]    smoke
     Execute Command  mach set "f4w5500"
-    Execute Command  sysbus ReadDoubleWord 0x40013000
+    Execute Command  sysbus ReadDoubleWord 0x40003800
+
+I2C2 Registers Accessible
+    [Tags]    smoke
+    Execute Command  mach set "f4w5500"
+    Execute Command  sysbus ReadDoubleWord 0x40005800
 
 W5500 Datagram Fidelity
     [Tags]    model

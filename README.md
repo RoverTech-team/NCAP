@@ -23,6 +23,9 @@ open either directly in <https://app.diagrams.net>.
 | `renode_configs/scripts/project/f4_w5500_single.resc` | Single-node simulation script |
 | `renode_configs/tests/project/test_f4_w5500.robot` | Smoke + datagram-fidelity tests (`renode-test`) |
 | `docs/architecture-*.drawio[.json]` | Architecture diagrams (modules, and software architecture / runtime interactions) |
+| `docs/pin_mapping.md` | STM32F446 pin assignment: W5500 on SPI2, OV7670 DCMI, I2C2, USART2, and pin ownership |
+| `docs/pin_mapping_gre.md` | Physical CN5/CN7/CN8/CN9/CN10 header mapping for NUCLEO-F446RE |
+| `firmware/board_config.h` | Single source of truth for the NUCLEO-F446RE pin map (W5500, I2C2, DCMI, UART) |
 | `renode_configs/tests/w5500_model/` | Standalone model test project (`dotnet run`, no Renode needed; incl. `EthernetTests.cs` for the ARP/IPv4/UDP path) |
 | `renode_configs/peripherals/OV7670.cs` | OV7670 camera model: SCCB registers + DVP parallel output (PCLK/VSYNC/HREF/D0-D7), COM3/COM14 downscaling, synthetic scene |
 | `renode_configs/peripherals/Dcmi.cs` | STM32F4 DCMI model (RM0090 ch.13 register map, no CGR/CCMR), byte capture on PCLK, 32-bit DMA requests, crop/snapshot |
@@ -34,7 +37,7 @@ open either directly in <https://app.diagrams.net>.
 | `scripts/run_5node_video.sh` | N parallel video streams, one port per node |
 | `scripts/verify_sysusage.sh` | Builds the `NCAP_SYSUSAGE` x `NCAP_FREERTOS` matrix in scratch `BUILD=` dirs, checks RAM budget and the on/off symbol switch (`--clean` removes them) |
 | `firmware/sysusage.c`, `.h` | System-usage telemetry on `/diagnostics` (`diagnostic_msgs/msg/DiagnosticArray`), sampled by a dedicated FreeRTOS task; off by default |
-| `firmware/i2c1.c`, `firmware/imu.c` | Minimal I2C1 master + LSM9DS1 driver (`sensor_msgs/Imu` on `/imu/data`) |
+| `firmware/i2c_bus.c`, `firmware/imu.c` | Minimal I2C2 master + LSM9DS1 driver (`sensor_msgs/Imu` on `/imu/data`) |
 | `firmware/ov7670.c` | OV7670 SCCB init (reset, YUV422, COM3/COM14 output scaling, readback check) |
 | `firmware/ov7670_dvp.c`, `.h` | DCMI + DMA2 capture into a frame ring, in-place Y/Cb/Cr de-interleave |
 | `firmware/video_udp.c` | Framed mono8 UDP video stream, deadline-paced to `VIDEO_FPS` (synthetic generator or DVP capture) |
@@ -82,7 +85,7 @@ add the transport to `C_SOURCES`, register via `rmw_uros_set_custom_transport()`
 
 ## End-to-end status
 
-**Working (verified):** STM32F4 firmware -> SPI1 -> W5500 model -> host UDP -> peer,
+**Working (verified):** STM32F4 firmware -> SPI2 -> W5500 model -> host UDP -> peer,
 with a full round trip.
 
 ```
@@ -129,12 +132,16 @@ Run it: `./scripts/run_e2e.sh` (builds firmware, ensures the agent container, st
 * **`ClockEntry` must be registered.** Constructing one does not schedule it;
   `machine.ClockSource.AddClockEntry(pclk)` is required or the pixel clock
   never fires.
-* **SCCB tops out at 400 kHz.** `i2c1.c` was pinned to 100 kHz standard mode;
+* **SCCB tops out at 400 kHz.** `i2c_bus.c` was pinned to 100 kHz standard mode;
   the OV7670 datasheet allows `fSIO_C` = 400 KHz, so `I2C_SCL_HZ` is now a
   tunable defaulting to 400 kHz with the correct fast-mode `TRISE`. This is the
   hard ceiling for register traffic, and the reason pixels cannot come over
   SCCB at any useful rate (a 160x120 YUV422 frame is 691,200 SCL pulses = 1.7 s
   at 400 kHz).
+* **SCCB has no repeated START.** `i2c_bus_read_regs()` writes the register
+  address, issues `STOP`, waits for the bus to go idle, then starts a fresh
+  transfer for the read. A repeated START is ignored by the OV7670 (the address
+  ACKs but every read returns `0x00` / `ARLO`).
 * **DCMI requests DMA per 32-bit word, not per byte** (RM0090 §13.8.11 packs
   received bytes into `DR` before requesting a transfer). Getting this wrong
   quadruples the DMA request rate.
@@ -198,7 +205,7 @@ Two related bugs fixed at the same time:
 
 ```
 STM32F446 firmware (libmicroros.a)
-  -> SPI1 -> W5500 Renode model (UDP, host-socket bridge)
+  -> SPI2 -> W5500 Renode model (UDP, host-socket bridge)
   -> micro-ROS agent (microros/micro-ros-agent:humble)
   -> ROS 2  std_msgs/msg/Int32  on /heartbeat
 ```
@@ -380,11 +387,11 @@ received zeros. Both helpers now loop in 64-byte chunks (CS stays asserted for
 the whole burst, so framing is preserved). This was also the cause of the
 earlier TCP video payload failure, not the `Sn_TX_W` path that was suspected.
 
-## LSM9DS1 IMU over I2C1
+## LSM9DS1 IMU over I2C2
 
 The board description wires Renode's stock `Sensors.LSM9DS1_IMU` (0x6B) and
-`Sensors.LSM9DS1_Magnetic` (0x1E) to `i2c1` - no custom model needed. The
-firmware drives them with a minimal register-level I2C master (`i2c1.c`,
+`Sensors.LSM9DS1_Magnetic` (0x1E) to `i2c2` - no custom model needed. The
+firmware drives them with a minimal register-level I2C master (`i2c_bus.c`,
 `imu.c`) and publishes `sensor_msgs/Imu` on `/imu/data` alongside the
 heartbeat, from the same executor timer. IMU bring-up is non-fatal: a missing
 sensor degrades to heartbeat-only.
@@ -396,7 +403,7 @@ Two Renode/model quirks worth knowing:
 
 - `STM32F1_I2C` forwards queued transmit bytes to the peripheral **on STOP**.
   Waiting BTF before STOP stalls, because BTF for trailing bytes is only
-  produced by that flush. `i2c1_write_reg()` therefore stages on TXE and goes
+  produced by that flush. `i2c_bus_write_reg()` therefore stages on TXE and goes
   straight to STOP. Multi-byte master *reads* hit an unhandled register-read
   path that aborts the emulator, so `imu_read()` fetches each output byte with
   its own single-byte transaction.
@@ -736,7 +743,7 @@ free because `--gc-sections` drops `ucHeap` while the tree contains no
 defaulting to QVGA YUV422: PID `0x76` / VER `0x73`, COM7 reset/format/resolution,
 CLKRC/COM3/COM14/COM15/COM17/TSLB storage with side effects, and a deterministic
 synthetic scene whose luma matches `video_udp.c`'s generator pixel-for-pixel.
-It sits on `i2c1` at `0x21` alongside the IMU.
+It sits on `i2c2` at `0x21` alongside the IMU.
 
 **Pixels travel over the DVP parallel bus, not SCCB.** The model drives
 `PCLK`/`VSYNC`/`HREF`/`D0-D7` from a `ClockEntry`, so
@@ -907,23 +914,65 @@ row means rising monotonically:
 # corrupt one : 78/160 non-decreasing, row means clustered ~105
 ```
 
-### Hardware rewiring is required
+### Hardware wiring on NUCLEO-F446RE
 
-STM32F446 DCMI pins are AF13 with no remap (only `DCMI_D0` can move, PC6<->PC13),
-and two of them collide with the original W5500 SPI1 pins:
+The STM32F446 DCMI is AF13, but the old firmware used two pins that are not
+even bonded on the LQFP64 package (`PA17`, `PD6`) plus the wrong data lanes.
+The current map in [`firmware/board_config.h`](../firmware/board_config.h) is
+the real one:
 
-| DCMI | Pin | Was |
-|---|---|---|
-| `DCMI_PIXCLK` | PA6 | SPI1_MISO |
-| `DCMI_VSYNC` | PA4 | W5500 SCSn |
+| DCMI | Pin |
+|---|---|
+| `DCMI_PIXCLK` | PA6 |
+| `DCMI_HSYNC` / HREF | PA4 |
+| `DCMI_VSYNC` | PB7 |
+| `D0..D3` | PC6..PC9 |
+| `D4` | PC11 |
+| `D5` | PB6 |
+| `D6` | PB8 |
+| `D7` | PB9 |
+| `PWDN` | PA11 |
+| `XLK` / `XCLK` | PA8 (MCO1, 16 MHz) |
+| `RET` | PB0 (active low) |
 
-**The W5500 must move to SPI2.** Simulation-only users need no change; real
-hardware must be re-soldered:
+The W5500 stays on SPI2 and its reset line moved from the missing PB11 to
+PB2. The I2C bus moved from PB6/PB7 to I2C2 (PB10/PB3) because PB6/PB7 are
+DCMI lanes:
 
 ```
-W5500: PB13=SCK, PB14=MISO, PB15=MOSI, PB12=SCSn, PB11=RSTn  (was PA5/6/7, PA4, PA3)
-DCMI : PA6=PIXCLK, PA4=VSYNC, PA17=HREF, PC6..PC11=D0..D5, PC12=D6, PD6=D7
+W5500: PB13=SCK, PB14=MISO, PB15=MOSI, PB12=SCSn, PB2=RSTn
+I2C2 : PB10=SCL, PB3=SDA   (OV7670 SCCB + LSM9DS1)
+DCMI : PA6=PIXCLK, PA4=HSYNC, PB7=VSYNC,
+       PC6..PC9=D0..D3, PC11=D4, PB6=D5, PB8=D6, PB9=D7
+CAM  : PA8=XCLK (MCO1 16 MHz), PA11=PWDN, PB0=RET
 ```
+
+See [`docs/pin_mapping_gre.md`](../docs/pin_mapping_gre.md) for the physical
+CN5/CN7/CN8/CN9/CN10 positions. `PB3` is also SWO; open SB15 if the ST-LINK
+loads the I2C2 SDA line.
+
+### Bench status (November 2026)
+
+Verified on a NUCLEO-F446RE with a W5500 module:
+
+| Item | Status |
+|---|---|
+| W5500 over SPI2 | works - `VERSIONR=04`, PHY link up |
+| Ping to `192.168.0.10` | works |
+| micro-ROS agent + microk3 dashboard | session established, `ncap_f4` publishes `/heartbeat` |
+| OV7670 SCCB | works - `PID=0x76`, `VER=0x73`, registers configure |
+| OV7670 DVP capture | frames captured but pixels still `0x00`; the data lines measure held low at the module, so this is open |
+
+Bring-up build notes:
+
+- SCCB runs at 100 kHz while debugging (`I2C_SCL_HZ=100000`). The OV7670 has no
+  repeated START, so reads use `STOP` then a fresh `START`; 400 kHz also works
+  with solid pull-ups.
+- `NCAP_CAM_TEST=1` builds a camera-only probe loop that never touches the
+  W5500, so the sensor can be debugged with the Ethernet module unpowered.
+- The video personality used on the bench is
+  `NCAP_VIDEO_UDP=1 NCAP_DVP=1 DVP_POLL_ONLY=1`, sending VFR0 to
+  `VIDEO_HOST_IP:VIDEO_PORT` (default `192.168.0.1:18080`).
 
 
 ## Five nodes in one simulation

@@ -17,6 +17,8 @@
 
 # 1. Compile + load the custom W5500 ISPIPeripheral (Roslyn, no .dll needed)
 include @renode_configs/peripherals/W5500.cs
+include @renode_configs/peripherals/OV7670.cs
+include @renode_configs/peripherals/Dcmi.cs
 
 # 2. Create the machine (path is CWD-relative; run Renode from project root)
 mach create "f4w5500"

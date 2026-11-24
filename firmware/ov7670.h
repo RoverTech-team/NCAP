@@ -1,10 +1,9 @@
-// OmniVision OV7670 camera over SCCB (I2C1, 7-bit address 0x21).
+// OmniVision OV7670 camera over SCCB (I2C2, 7-bit address 0x21).
 //
 // Bring-up subset: PID/VER identification, reset, and a fixed QVGA/YUV422
-// configuration matching this project's streaming pipeline. Pixel data is
-// fetched through the model's test readout registers (0xF0-0xF3); see
-// renode_configs/peripherals/OV7670.cs for why this stands in for the
-// parallel bus. The returned bytes are the frame's luma (Y of YUYV).
+// configuration matching this project's streaming pipeline. The 0xF0-0xF3
+// readout registers are a Renode model test aid only; real silicon delivers
+// pixels over the DVP parallel bus (see ov7670_dvp.c).
 
 #ifndef OV7670_H
 #define OV7670_H

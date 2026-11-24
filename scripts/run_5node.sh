@@ -56,6 +56,7 @@ UARTDIR="$(mktemp -d -t f4_5node_uart)"
 {
 echo 'include @renode_configs/peripherals/W5500.cs'
 echo 'include @renode_configs/peripherals/OV7670.cs'
+echo 'include @renode_configs/peripherals/Dcmi.cs'
 for i in $(seq 0 $((COUNT-1))); do
     echo "mach create \"n${i}\""
     echo "machine LoadPlatformDescription @renode_configs/platforms/boards/stm32f4_w5500.repl"
@@ -66,8 +67,8 @@ for i in $(seq 0 $((COUNT-1))); do
     # the model scales by sensitivity and large ones overflow int16).
     AZ=$(python3 -c "print(1.0+0.2*$i)")
     GX=$(python3 -c "print(float($i))")
-    echo "i2c1.lsm9ds1_imu FeedAccelerationSample 0 0 $AZ 100000"
-    echo "i2c1.lsm9ds1_imu FeedAngularRateSample $GX 0 0 100000"
+    echo "i2c2.lsm9ds1_imu FeedAccelerationSample 0 0 $AZ 100000"
+    echo "i2c2.lsm9ds1_imu FeedAngularRateSample $GX 0 0 100000"
     if [ "$GUI" = 1 ]; then
         echo "showAnalyzer usart2"
     fi

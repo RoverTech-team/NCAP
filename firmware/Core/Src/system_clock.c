@@ -16,10 +16,14 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
     RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+    // HSI 16 MHz / PLLM 8 = 2 MHz; x PLLN 180 = 360 MHz VCO; / PLLP 2 = 180 MHz.
+    // PLLN was 288: with HSI that is a 576 MHz VCO and 288 MHz SYSCLK, above the
+    // F446's 180 MHz limit. The core then failed to fetch instructions from
+    // flash (IBUSERR/UNDEFINSTR) immediately after the clock switch.
     RCC_OscInitStruct.PLL.PLLM = 8;
-    RCC_OscInitStruct.PLL.PLLN = 288;
+    RCC_OscInitStruct.PLL.PLLN = 180;
     RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-    RCC_OscInitStruct.PLL.PLLQ = 6;
+    RCC_OscInitStruct.PLL.PLLQ = 8;   // 360 / 8 = 45 MHz on the 48 MHz domain
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
         Error_Handler();

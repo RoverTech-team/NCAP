@@ -40,8 +40,9 @@ rosidl_typesupport_microxrcedds_c__get_message_type_support_handle__diagnostic_m
 #include "wizchip_conf.h"
 #include "socket.h"
 
-#include "i2c1.h"
+#include "i2c_bus.h"
 #include "imu.h"
+#include "ov7670.h"
 
 #include "video_udp.h"
 
@@ -79,7 +80,6 @@ void ncap_cpu_relax(void)
 }
 #endif
 
-extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart2;
 
 uint8_t w5500_version(void);
@@ -364,18 +364,93 @@ static void timer_callback(rcl_timer_t *tm, int64_t ts)
 #endif /* NCAP_SYSUSAGE == 1 */
 }
 
+#if NCAP_CAM_TEST == 1
+// Connectivity test: sample the data pins with pull-up and with pull-down.
+// A pin driven by the sensor reads the same duty both ways; a floating pin
+// follows the pull (0% vs 100%). HS/VS/PLK are sampled without pull so they
+// are not disturbed.
+static uint32_t data_high_percent(uint32_t pull)
+{
+    GPIO_InitTypeDef g = {0};
+    g.Mode = GPIO_MODE_INPUT;
+    g.Pull = pull;
+    g.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    g.Pin = GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_11;
+    HAL_GPIO_Init(GPIOC, &g);
+    g.Pin = GPIO_PIN_6 | GPIO_PIN_8 | GPIO_PIN_9;
+    HAL_GPIO_Init(GPIOB, &g);
+
+    uint32_t hi = 0, n = 0;
+    uint32_t t0 = HAL_GetTick();
+    while ((HAL_GetTick() - t0) < 100u)
+    {
+        uint32_t b = GPIOB->IDR, c = GPIOC->IDR;
+        hi += ((c & (GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_11)) != 0u) +
+              ((b & (GPIO_PIN_6 | GPIO_PIN_8 | GPIO_PIN_9)) != 0u);
+        n++;
+    }
+    return (hi * 100u) / (n ? n : 1u);
+}
+
+static void cam_pin_activity(void)
+{
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+
+    GPIO_InitTypeDef g = {0};
+    g.Mode = GPIO_MODE_INPUT;
+    g.Pull = GPIO_NOPULL;
+    g.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    g.Pin = GPIO_PIN_4 | GPIO_PIN_6;
+    HAL_GPIO_Init(GPIOA, &g);
+    g.Pin = GPIO_PIN_7;
+    HAL_GPIO_Init(GPIOB, &g);
+    uint32_t hs = 0, vs = 0;
+    uint32_t pa = GPIOA->IDR, pb = GPIOB->IDR;
+    uint32_t t0 = HAL_GetTick();
+    while ((HAL_GetTick() - t0) < 100u)
+    {
+        uint32_t a = GPIOA->IDR, b = GPIOB->IDR;
+        if ((a ^ pa) & GPIO_PIN_4) hs++;
+        if ((b ^ pb) & GPIO_PIN_7) vs++;
+        pa = a; pb = b;
+    }
+    uint32_t up = data_high_percent(GPIO_PULLUP);
+    uint32_t dn = data_high_percent(GPIO_PULLDOWN);
+    printf("CAM: HS edges=%lu VS edges=%lu | data high%% pullup=%lu pulldown=%lu\r\n",
+           (unsigned long)hs, (unsigned long)vs, (unsigned long)up, (unsigned long)dn);
+}
+#endif
+
 int main(void)
 {
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
-    // The W5500 is on SPI2 now (SPI1's PA4/PA6 belong to DCMI), so SPI2 is
-    // the bus that must be up. SPI1 is left initialised for any other user.
-    MX_SPI1_Init();
+    // NUCLEO-F446RE: SPI2 carries the W5500. SPI1 is not initialised because
+    // its PA6/PA4 pins are DCMI_PIXCLK/DCMI_HSYNC on this board.
     MX_SPI2_Init();
     MX_USART2_UART_Init();
 
     uart_puts("\r\nNCAP micro-ROS over W5500\r\n");
+
+#if NCAP_CAM_TEST == 1
+    // Camera-only bring-up personality: no W5500, no micro-ROS. Re-probe SCCB
+    // every 2 s until the sensor answers, so wiring can be changed live.
+    uart_puts("CAM TEST: SCCB probe loop (no W5500 required)\r\n");
+    i2c_bus_init();
+    for (;;)
+    {
+        static bool pin_reported = false;
+        if (ov7670_init() && !pin_reported)
+        {
+            cam_pin_activity();
+            pin_reported = true;
+        }
+        HAL_Delay(2000);
+    }
+#endif
 
     static uint8_t mac[6]  = {0x00, 0xF4, 0x57, 0x00, 0x00, 0x01};
     static uint8_t ip[4]   = {192, 168, 0, 10};
@@ -383,13 +458,34 @@ int main(void)
     ip[3] = (uint8_t)(10u + (unsigned)NODE_ID);
     static const uint8_t mask[4] = {255, 255, 255, 0};
     static const uint8_t gw[4]   = {192, 168, 0, 1};
-    w5500_hw_init(mac, ip, mask, gw);
 
-    uint8_t ver = w5500_version();
-    uart_puts(ver == 0x04 ? "W5500 ok (VERSIONR=04)\r\n" : "W5500 FAIL\r\n");
-    if (ver != 0x04) { while (1) { } }
+    // A cold 5 V rail or a slow module regulator can leave VERSIONR invalid at
+    // first boot; retry the whole reset + configure sequence a few times.
+    uint8_t ver = 0;
+    for (unsigned attempt = 0; attempt < 3u; attempt++)
+    {
+        w5500_hw_init(mac, ip, mask, gw);
+        ver = w5500_version();
+        if (ver == 0x04u)
+        {
+            break;
+        }
+        HAL_Delay(100);
+    }
 
-    i2c1_init();
+    if (ver == 0x04)
+    {
+        uart_puts("W5500 ok (VERSIONR=04)\r\n");
+    }
+    else
+    {
+        // 0xFF: MISO idle/not driven (no power, no CS, or chip absent)
+        // 0x00: MISO stuck low (short, swapped MOSI/MISO, or no clock)
+        printf("W5500 FAIL (VERSIONR=%02X)\r\n", ver);
+        while (1) { }
+    }
+
+    i2c_bus_init();
     imu_ready = imu_init();
     uart_puts(imu_ready ? "imu init ok\r\n" : "imu init skipped\r\n");
 

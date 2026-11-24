@@ -22,7 +22,7 @@
         <mxCell id="gRepl" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;" value="Board description  &lt;font style=&#39;font-size:10px&#39;&gt;(renode_configs/platforms/boards/)&lt;/font&gt;" vertex="1">
           <mxGeometry height="170" width="560" x="40" y="610" as="geometry" />
         </mxCell>
-        <mxCell id="bRepl" parent="gRepl" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="stm32f4_w5500.repl&#xa;w5500 @ spi2 · dcmi @ sysbus 0x50050000&#xa;ov7670 @ i2c1 0x21 · DMAReceive -&gt; dma2@1&#xa;IRQ -&gt; nvic@78 · StreamEnable -&gt; ov7670@0" vertex="1">
+        <mxCell id="bRepl" parent="gRepl" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="stm32f4_w5500.repl&#xa;w5500 @ spi2 · dcmi @ sysbus 0x50050000&#xa;ov7670 @ i2c2 0x21 · DMAReceive -&gt; dma2@1&#xa;IRQ -&gt; nvic@78 · StreamEnable -&gt; ov7670@0" vertex="1">
           <mxGeometry height="120" width="260" x="22" y="44" as="geometry" />
         </mxCell>
         <mxCell id="gApp" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=13;fontStyle=1;spacingLeft=8;spacingTop=4;arcSize=6;container=1;collapsible=0;" value="Application firmware  &lt;font style=&#39;font-size:10px&#39;&gt;(firmware/)&lt;/font&gt;" vertex="1">
@@ -34,7 +34,7 @@
         <mxCell id="aDVP" parent="gApp" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="ov7670_dvp.c / .h&#xa;DCMI + DMA2 -&gt; ring&#xa;in-place Y strip" vertex="1">
           <mxGeometry height="88" width="230" x="22" y="228" as="geometry" />
         </mxCell>
-        <mxCell id="aI2C" parent="gApp" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="i2c1.c&#xa;I2C1 master&#xa;400 kHz fast mode" vertex="1">
+        <mxCell id="aI2C" parent="gApp" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="i2c_bus.c&#xa;I2C2 master&#xa;400 kHz fast mode" vertex="1">
           <mxGeometry height="88" width="230" x="22" y="412" as="geometry" />
         </mxCell>
         <mxCell id="aVid" parent="gApp" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="video_udp.c&#xa;framing + deadline pacer&#xa;VIDEO_FPS target" vertex="1">
@@ -55,7 +55,7 @@
         <mxCell id="pSPI" parent="gPlat" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="SPI.STM32SPI&#xa;spi1 / spi2" vertex="1">
           <mxGeometry height="88" width="230" x="424" y="44" as="geometry" />
         </mxCell>
-        <mxCell id="pI2C" parent="gPlat" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="I2C.STM32F1_I2C&#xa;i2c1 @ 0x54" vertex="1">
+        <mxCell id="pI2C" parent="gPlat" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="I2C.STM32F1_I2C&#xa;i2c2 @ 0x58" vertex="1">
           <mxGeometry height="88" width="230" x="22" y="228" as="geometry" />
         </mxCell>
         <mxCell id="pUART" parent="gPlat" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="UART.STM32_UART&#xa;usart2 debug" vertex="1">
@@ -121,7 +121,7 @@
         <mxCell id="eView" parent="gExt" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" value="microk3/vfr_stream.py&#xa;VfrUdpViewer -&gt; JPEG&#xa;Flask dashboard" vertex="1">
           <mxGeometry height="88" width="230" x="424" y="44" as="geometry" />
         </mxCell>
-        <mxCell id="aWiz" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="wizchip_port.c&#xa;SPI2 burst R/W&#xa;64-byte chunks&#xa;CS=PB12 RST=PB11" vertex="1">
+        <mxCell id="aWiz" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="wizchip_port.c&#xa;SPI2 burst R/W&#xa;64-byte chunks&#xa;CS=PB12 RST=PB2" vertex="1">
           <mxGeometry height="88" width="230" x="62" y="1606" as="geometry" />
         </mxCell>
         <mxCell id="aXRCE" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="w5500_transport.c&#xa;micro-ROS XRCE&#xa;socket 0" vertex="1">
@@ -148,7 +148,7 @@
         <mxCell id="eRss" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" value="ROS topics&#xa;/heartbeat, /imu/data" vertex="1">
           <mxGeometry height="88" width="230" x="2026" y="878" as="geometry" />
         </mxCell>
-        <mxCell id="n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;spacingLeft=8;spacingTop=6;align=left;" value="&lt;b&gt;Design notes&lt;/b&gt;&lt;br/&gt;&amp;#8226; W5500 sits on &lt;b&gt;spi2&lt;/b&gt; (PB13/14/15, CS PB12, RST PB11) because DCMI hard-owns PA4 (VSYNC) and PA6 (PIXCLK) with no remap available.&lt;br/&gt;&amp;#8226; STM32F4 DCMI has &lt;b&gt;no CGR/CCMR&lt;/b&gt;, so chroma is stripped on the CPU; BSM/OEBS at CR 16-18 are reserved per RM0090.&lt;br/&gt;&amp;#8226; The OV7670 has &lt;b&gt;no YUV420&lt;/b&gt; mode - 8-bit outputs are YUV422 / RGB / GRB 4:2:2 / Raw - so QVGA YUV422 (153600 B) cannot fit 128 KB RAM.&lt;br/&gt;&amp;#8226; Socket 0 = micro-ROS, socket 1 = video. Every cross-container edge runs in a gutter between containers; edges inside one container run in the gaps between boxes.&lt;br/&gt;&amp;#8226; Parallel edges are held at least 24 px apart so individual lines stay traceable.&lt;br/&gt;&amp;#8226; Tests: renode-test robot suite plus the standalone W5500 model project." vertex="1">
+        <mxCell id="n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;spacingLeft=8;spacingTop=6;align=left;" value="&lt;b&gt;Design notes&lt;/b&gt;&lt;br/&gt;&amp;#8226; W5500 sits on &lt;b&gt;spi2&lt;/b&gt; (PB13/14/15, CS PB12, RST PB2) because DCMI hard-owns PA4 (HSYNC) and PA6 (PIXCLK) with no remap available.&lt;br/&gt;&amp;#8226; STM32F4 DCMI has &lt;b&gt;no CGR/CCMR&lt;/b&gt;, so chroma is stripped on the CPU; BSM/OEBS at CR 16-18 are reserved per RM0090.&lt;br/&gt;&amp;#8226; The OV7670 has &lt;b&gt;no YUV420&lt;/b&gt; mode - 8-bit outputs are YUV422 / RGB / GRB 4:2:2 / Raw - so QVGA YUV422 (153600 B) cannot fit 128 KB RAM.&lt;br/&gt;&amp;#8226; Socket 0 = micro-ROS, socket 1 = video. Every cross-container edge runs in a gutter between containers; edges inside one container run in the gaps between boxes.&lt;br/&gt;&amp;#8226; Parallel edges are held at least 24 px apart so individual lines stay traceable.&lt;br/&gt;&amp;#8226; Tests: renode-test robot suite plus the standalone W5500 model project." vertex="1">
           <mxGeometry height="140" width="2530" x="70" y="1840" as="geometry" />
         </mxCell>
         <mxCell id="e1" edge="1" parent="1" source="mW5500" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeWidth=1.5;jettySize=auto;orthogonalLoop=1;labelBackgroundColor=#ffffff;fontSize=10;fontColor=#1a1a1a;verticalLabelPosition=middle;labelPadding=6;spacing=2;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="bRepl" value="SPI2 bus">

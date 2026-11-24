@@ -10,7 +10,8 @@
 #include <string.h>
 
 #include "main.h"
-#include "i2c1.h"
+#include "board_config.h"
+#include "i2c_bus.h"
 #include "ov7670.h"
 
 // ---- DCMI / DMA2 tunables ----
@@ -24,9 +25,6 @@
 
 // DCMI_DR -> DMA2 Stream1 Channel 1 (RM0090 DMA2 request mapping). The
 // platform wires dcmi DMAReceive -> dma2@1.
-// The F4 HAL only defines GPIO_PIN_0..15 individually; DCMI_HREF is PA17.
-#define DVP_PIN_HREF  (1UL << 17)
-
 static DMA_HandleTypeDef hdma_dcmi;
 
 // The capture buffer doubles as the de-interleaved luma frame: chroma is
@@ -110,16 +108,19 @@ static void dvp_strip_in_place(uint8_t *buf)
 
 // ---- pin configuration ----
 
-// STM32F446 DCMI is AF13 with no remap except DCMI_D0 (PC6 or PC13):
-//   PIXCLK PA6, VSYNC PA4, HREF PA17, PWDN PA11,
-//   D0..D5 PC6..PC11, D6 PC12, D7 PD6
-// PA4/PA6 are why the W5500 had to move off SPI1.
+// STM32F446 DCMI is AF13. This is the real alternate-function map used by
+// the NUCLEO-F446RE wiring (board_config.h):
+//   PIXCLK PA6, HSYNC PA4, VSYNC PB7,
+//   D0..D3 PC6..PC9, D4 PC11, D5 PB6, D6 PB8, D7 PB9.
+// XCLK (PA8), PWDN (PA11) and RET (PB0) are driven by ov7670_init() before
+// SCCB bring-up. The old PA17/HREF and PD6/D7 pins do not exist on the LQFP64
+// package. PA4/PA6 are why the W5500 had to move off SPI1; PB6/PB7 are why
+// I2C moved to I2C2.
 static void dvp_gpio_init(void)
 {
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
-    __HAL_RCC_GPIOD_CLK_ENABLE();
 
     GPIO_InitTypeDef g = {0};
     g.Mode = GPIO_MODE_AF_PP;
@@ -127,24 +128,14 @@ static void dvp_gpio_init(void)
     g.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     g.Alternate = GPIO_AF13_DCMI;
 
-    g.Pin = GPIO_PIN_6;                    // PIXCLK (input direction)
-    HAL_GPIO_Init(GPIOA, &g);
-    g.Pin = GPIO_PIN_4 | DVP_PIN_HREF;    // VSYNC, HREF
+    g.Pin = DVP_PIXCLK_PIN | DVP_HSYNC_PIN;
     HAL_GPIO_Init(GPIOA, &g);
 
-    g.Pin = GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 |
-            GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12;
+    g.Pin = DVP_VSYNC_PIN | DVP_D5_PIN | DVP_D6_PIN | DVP_D7_PIN;
+    HAL_GPIO_Init(GPIOB, &g);
+
+    g.Pin = DVP_D0_PIN | DVP_D1_PIN | DVP_D2_PIN | DVP_D3_PIN | DVP_D4_PIN;
     HAL_GPIO_Init(GPIOC, &g);
-
-    g.Pin = GPIO_PIN_6;                    // D7
-    HAL_GPIO_Init(GPIOD, &g);
-
-    // PWDN low = power down; drive it high to run.
-    g.Mode = GPIO_MODE_OUTPUT_PP;
-    g.Alternate = 0;
-    g.Pin = GPIO_PIN_11;
-    HAL_GPIO_Init(GPIOA, &g);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, GPIO_PIN_SET);
 }
 
 // ---- init ----
@@ -181,12 +172,14 @@ bool ov7670_dvp_init(void)
         return false;
     }
 
-    // Hardware sync, active-high VSYNC, active-low HREF, rising-edge PCLK,
-    // 8-bit extended data mode, continuous capture.
+    // Hardware sync (ESS must stay 0: embedded sync would make the DCMI wait
+    // for BT.656 SAV/EAV codes that OV7670 YUV422 output does not contain),
+    // active-high HSYNC/HREF and VSYNC, rising-edge PCLK, 8-bit data.
     uint32_t cr = DCMI_CR_ENABLE
-                | DCMI_CR_ESS
-                | DCMI_CR_VSPOL
                 | DCMI_CR_PCKPOL
+                | DCMI_CR_HSPOL
+                // VSPOL: OV7670 VSYNC is a frame-start pulse (idles low), so the
+                // frame spans the low period between pulses.
                 | 0u;   // EDM=00: 8-bit capture on D[7:0]
 #if DVP_CROP_ROWS > 0
     // Crop the captured window to the top DVP_CROP_ROWS lines. CWSTRT is
@@ -261,6 +254,16 @@ void DCMI_IRQHandler(void)
     {
         DCMI->ICR = DCMI_ICR_OVF_ISC;
         dvp_overruns++;
+        // Trailing bytes after the last active pixel can overrun a slot that
+        // is already full. A full slot is still a complete frame, so publish
+        // it and re-arm; otherwise just restart capture.
+        if (hdma_dcmi.Instance->NDTR == 0u)
+        {
+            dvp_publish_and_rearm();
+            return;
+        }
+        dvp_dma_stop();
+        dvp_dma_start();
     }
     if (mis & DCMI_IER_FRAME_IE)
     {

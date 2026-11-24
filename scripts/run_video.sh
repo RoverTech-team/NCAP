@@ -32,7 +32,7 @@ fi
 # Makefile variable changes do not trigger recompiles on their own; the
 # flag-dependent translation units must be touched or the ELF stays stale.
 touch "$ROOT/firmware/Core/Src/main.c" "$ROOT/firmware/video_udp.c" "$ROOT/firmware/ov7670.c" \
-      "$ROOT/firmware/i2c1.c" "$ROOT/firmware/Core/Src/spi.c" \
+      "$ROOT/firmware/i2c_bus.c" "$ROOT/firmware/Core/Src/spi.c" \
       "$ROOT/firmware/ov7670_dvp.c"
 make -C "$ROOT/firmware" NCAP_VIDEO_UDP=1 NCAP_DVP="${DVP:-0}" NCAP_OV7670="${OV7670:-0}" \
      VIDEO_PORT="$PORT" VIDEO_HOST_IP=127.0.0.1 VIDEO_WIDTH="$W" VIDEO_HEIGHT="$H" \

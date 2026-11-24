@@ -187,9 +187,9 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
     PB14    ------> SPI2_MISO
     PB15    ------> SPI2_MOSI
 
-    The W5500 moved here from SPI1 because DCMI hard-owns PA4 (VSYNC) and
-    PA6 (PIXCLK) with no remap available. PB12 (SCSn) and PB11 (RSTn) are
-    plain outputs configured in wizchip_port.c.
+    The W5500 moved here from SPI1 because DCMI owns PA4 (HSYNC) and PA6
+    (PIXCLK) with no remap available. PB12 (SCSn) and PB2 (RSTn) are plain
+    outputs configured in wizchip_port.c.
     */
     GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;

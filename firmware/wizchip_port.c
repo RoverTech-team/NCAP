@@ -1,8 +1,11 @@
-// WIZnet ioLibrary port layer for the NCAP STM32F4 + W5500 target.
-// SPI2: PB13=SCK, PB14=MISO, PB15=MOSI (AF5). SCSn=PB12, RSTn=PB11.
+// WIZnet ioLibrary port layer for the NCAP NUCLEO-F446RE target.
+// SPI2: PB13=SCK, PB14=MISO, PB15=MOSI (AF5). SCSn=PB12, RSTn=PB2.
 //
-// The W5500 moved from SPI1 to SPI2: the STM32F446 hardwires DCMI_VSYNC to
-// PA4 and DCMI_PIXCLK to PA6 with no remap option, and those were SPI1_MISO
+// PB11 (the original RSTn) is not bonded on the LQFP64 package, so the reset
+// line moved to PB2. SCSn stays on PB12. See board_config.h.
+//
+// The W5500 moved from SPI1 to SPI2: the STM32F446 hardwires DCMI_PIXCLK to
+// PA6 and DCMI_HSYNC to PA4 with no remap option, and those were SPI1_MISO
 // and SPI1_SCSn. Camera capture and the Ethernet PHY cannot share those pins.
 //
 // The current ioLibrary master no longer ships wizchip_init()/wizchip_setnetinfo(),
@@ -10,8 +13,10 @@
 
 #include "wizchip_conf.h"
 
+#include "board_config.h"
 #include "main.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -83,8 +88,8 @@ static void w5500_spi_write_burst(uint8_t *wbuf, uint16_t wlen)
     }
 }
 
-static void w5500_cs_low(void)  { HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET); }
-static void w5500_cs_high(void) { HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);  }
+static void w5500_cs_low(void)  { HAL_GPIO_WritePin(W5500_CS_GPIO_PORT, W5500_CS_PIN, GPIO_PIN_RESET); }
+static void w5500_cs_high(void) { HAL_GPIO_WritePin(W5500_CS_GPIO_PORT, W5500_CS_PIN, GPIO_PIN_SET);  }
 
 // Bare-metal build: no RTOS, so the critical section only needs to keep SPI
 // byte sequences contiguous, which the CS line already guarantees.
@@ -108,19 +113,21 @@ static void w5500_bind_callbacks(void)
 void wizchip_cs_low(void)  { w5500_cs_low(); }
 void wizchip_cs_high(void) { w5500_cs_high(); }
 
-void wizchip_reset_low(void)  { HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_RESET); }
-void wizchip_reset_high(void) { HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET); }
+void wizchip_reset_low(void)  { HAL_GPIO_WritePin(W5500_RST_GPIO_PORT, W5500_RST_PIN, GPIO_PIN_RESET); }
+void wizchip_reset_high(void) { HAL_GPIO_WritePin(W5500_RST_GPIO_PORT, W5500_RST_PIN, GPIO_PIN_SET); }
 
-// SCSn/RSTn are ordinary push-pull outputs on PB12/PB11.
+// SCSn/RSTn are ordinary push-pull outputs on PB12/PB2.
 static void w5500_control_gpio_init(void)
 {
     __HAL_RCC_GPIOB_CLK_ENABLE();
     GPIO_InitTypeDef g = {0};
-    g.Pin = GPIO_PIN_12 | GPIO_PIN_11;
     g.Mode = GPIO_MODE_OUTPUT_PP;
     g.Pull = GPIO_NOPULL;
     g.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(GPIOB, &g);
+    g.Pin = W5500_CS_PIN;
+    HAL_GPIO_Init(W5500_CS_GPIO_PORT, &g);
+    g.Pin = W5500_RST_PIN;
+    HAL_GPIO_Init(W5500_RST_GPIO_PORT, &g);
 }
 
 static uint8_t w5500_read_common(uint16_t off)
@@ -152,12 +159,26 @@ uint8_t w5500_version(void)
     return w5500_read_common(W5500_REG_VERSIONR);
 }
 
-void w5500_hw_init(const uint8_t mac[6], const uint8_t ip[4],
-                   const uint8_t mask[4], const uint8_t gw[4])
+// RSTn release alone is not enough: the PLL needs up to 1 ms to lock and a
+// 5 V module's regulator can still be ramping when the MCU boots. Poll
+// VERSIONR instead of trusting one read immediately after reset.
+static bool w5500_wait_version(uint32_t timeout_ms)
 {
-    w5500_control_gpio_init();
-    w5500_bind_callbacks();
+    uint32_t start = HAL_GetTick();
+    do
+    {
+        if (w5500_read_common(W5500_REG_VERSIONR) == 0x04u)
+        {
+            return true;
+        }
+        HAL_Delay(10);
+    } while ((HAL_GetTick() - start) < timeout_ms);
 
+    return false;
+}
+
+static bool w5500_reset_and_wait(void)
+{
     w5500_cs_high();
     wizchip_reset_high();
     HAL_Delay(10);
@@ -165,7 +186,22 @@ void w5500_hw_init(const uint8_t mac[6], const uint8_t ip[4],
     wizchip_reset_low();
     HAL_Delay(10);
     wizchip_reset_high();
-    HAL_Delay(10);
+    HAL_Delay(50);   // PLL lock plus module supply ramp
+
+    return w5500_wait_version(200);
+}
+
+void w5500_hw_init(const uint8_t mac[6], const uint8_t ip[4],
+                   const uint8_t mask[4], const uint8_t gw[4])
+{
+    w5500_control_gpio_init();
+    w5500_bind_callbacks();
+
+    if (!w5500_reset_and_wait())
+    {
+        // Leave the chip untouched; the caller retries and reports VERSIONR.
+        return;
+    }
 
     w5500_write_common(W5500_REG_MR, 0x80);      // software reset
     HAL_Delay(10);
@@ -183,5 +219,16 @@ void w5500_hw_init(const uint8_t mac[6], const uint8_t ip[4],
     for (int i = 0; i < 6; i++)
     {
         w5500_write_common(W5500_REG_SHAR + i, mac[i]);
+    }
+
+    // RSTn restarts PHY auto-negotiation. A send before the link is up gets
+    // SOCKERR_TIMEOUT from ARP, so wait (bounded) for PHYCFGR.LNK first.
+    for (uint32_t i = 0; i < 200u; i++)
+    {
+        if ((w5500_read_common(W5500_REG_PHYCFGR) & 0x01u) != 0u)
+        {
+            break;
+        }
+        HAL_Delay(10);
     }
 }

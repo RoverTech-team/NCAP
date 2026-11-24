@@ -200,7 +200,7 @@
         },
         {
          "id": "bRepl",
-         "value": "stm32f4_w5500.repl\nw5500 @ spi2 \u00b7 dcmi @ sysbus 0x50050000\nov7670 @ i2c1 0x21 \u00b7 DMAReceive -> dma2@1\nIRQ -> nvic@78 \u00b7 StreamEnable -> ov7670@0",
+         "value": "stm32f4_w5500.repl\nw5500 @ spi2 \u00b7 dcmi @ sysbus 0x50050000\nov7670 @ i2c2 0x21 \u00b7 DMAReceive -> dma2@1\nIRQ -> nvic@78 \u00b7 StreamEnable -> ov7670@0",
          "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;",
          "parent": "gRepl",
          "vertex": "1",
@@ -239,7 +239,7 @@
         },
         {
          "id": "aI2C",
-         "value": "i2c1.c\nI2C1 master\n400 kHz fast mode",
+         "value": "i2c_bus.c\nI2C2 master\n400 kHz fast mode",
          "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
          "parent": "gApp",
          "vertex": "1",
@@ -252,7 +252,7 @@
         },
         {
          "id": "aWiz",
-         "value": "wizchip_port.c\nSPI2 burst R/W\n64-byte chunks\nCS=PB12 RST=PB11",
+         "value": "wizchip_port.c\nSPI2 burst R/W\n64-byte chunks\nCS=PB12 RST=PB2",
          "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;",
          "parent": "1",
          "vertex": "1",
@@ -343,7 +343,7 @@
         },
         {
          "id": "pI2C",
-         "value": "I2C.STM32F1_I2C\ni2c1 @ 0x54",
+         "value": "I2C.STM32F1_I2C\ni2c2 @ 0x58",
          "style": "rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;",
          "parent": "gPlat",
          "vertex": "1",
@@ -668,7 +668,7 @@
         },
         {
          "id": "n1",
-         "value": "<b>Design notes</b><br/>&#8226; W5500 sits on <b>spi2</b> (PB13/14/15, CS PB12, RST PB11) because DCMI hard-owns PA4 (VSYNC) and PA6 (PIXCLK) with no remap available.<br/>&#8226; STM32F4 DCMI has <b>no CGR/CCMR</b>, so chroma is stripped on the CPU; BSM/OEBS at CR 16-18 are reserved per RM0090.<br/>&#8226; The OV7670 has <b>no YUV420</b> mode - 8-bit outputs are YUV422 / RGB / GRB 4:2:2 / Raw - so QVGA YUV422 (153600 B) cannot fit 128 KB RAM.<br/>&#8226; Socket 0 = micro-ROS, socket 1 = video. Every cross-container edge runs in a gutter between containers; edges inside one container run in the gaps between boxes.<br/>&#8226; Parallel edges are held at least 24 px apart so individual lines stay traceable.<br/>&#8226; Tests: renode-test robot suite plus the standalone W5500 model project.",
+         "value": "<b>Design notes</b><br/>&#8226; W5500 sits on <b>spi2</b> (PB13/14/15, CS PB12, RST PB2) because DCMI hard-owns PA4 (HSYNC) and PA6 (PIXCLK) with no remap available.<br/>&#8226; STM32F4 DCMI has <b>no CGR/CCMR</b>, so chroma is stripped on the CPU; BSM/OEBS at CR 16-18 are reserved per RM0090.<br/>&#8226; The OV7670 has <b>no YUV420</b> mode - 8-bit outputs are YUV422 / RGB / GRB 4:2:2 / Raw - so QVGA YUV422 (153600 B) cannot fit 128 KB RAM.<br/>&#8226; Socket 0 = micro-ROS, socket 1 = video. Every cross-container edge runs in a gutter between containers; edges inside one container run in the gaps between boxes.<br/>&#8226; Parallel edges are held at least 24 px apart so individual lines stay traceable.<br/>&#8226; Tests: renode-test robot suite plus the standalone W5500 model project.",
          "style": "rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;spacingLeft=8;spacingTop=6;align=left;",
          "parent": "1",
          "vertex": "1",

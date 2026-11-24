@@ -1,22 +1,21 @@
 using "platforms/cpus/stm32f4.repl"
 
-// STM32F4 + WIZnet W5500 (SPI Ethernet) board.
+// NUCLEO-F446RE + WIZnet W5500 (SPI Ethernet).
 //
-// The W5500 sits on SPI2, NOT SPI1. DCMI owns PA4/PA6 on this MCU and those
-// pins are hard-wired to DCMI_VSYNC / DCMI_PIXCLK with no remap available, so
-// SPI1 (PA5/PA6/PA7 + PA4 SCSn) cannot coexist with camera capture.
-//   SPI2: PB13=SCK, PB14=MISO, PB15=MOSI, PB12=SCSn, PB11=RSTn
+// W5500 on SPI2:
+//   SPI2: PB13=SCK, PB14=MISO, PB15=MOSI, PB12=SCSn, PB2=RSTn
 //   W5500 control lines (all active low):
 //     SCSn -> PB12 (w5500@0)  delimits Variable-Length Data mode SPI frames
-//     RSTn -> PB11 (w5500@1)  hardware reset
+//     RSTn -> PB2  (w5500@1)  hardware reset
 //     INTn <- PB1             interrupt to MCU (model output)
 //
 // The OV7670 streams over its DVP parallel bus into a software-modelled DCMI.
-// Pin map (DCMI is AF13 only, no remap):
-//   DCMI_PIXCLK <- PA6      DCMI_VSYNC <- PA4     DCMI_HREF <- PA17
-//   DCMI_D0..D5  <- PC6..PC11                    DCMI_D6 <- PC12  DCMI_D7 <- PD6
-// NOTE: PC11 is also USART3_TX on some boards; keep USART2 (PA2/PA3) for the
-// debug UART, as this project does, to avoid a clash.
+// Pin map (STM32F446 DCMI AF13, NUCLEO-F446RE):
+//   PIXCLK <- PA6   HSYNC <- PA4   VSYNC <- PB7
+//   D0..D3 <- PC6..PC9   D4 <- PC11   D5 <- PB6   D6 <- PB8   D7 <- PB9
+// I2C2 (PB10=SCL, PB3=SDA) carries SCCB and the IMU.
+//
+// This mirrors firmware/board_config.h.
 
 w5500: Network.W5500 @ spi2
     LoopbackMode: false
@@ -32,7 +31,7 @@ w5500: Network.W5500 @ spi2
 dcmi: Sensors.Dcmi @ sysbus <0x50050000, +0x2C>
     StreamEnable-> ov7670@0
 
-ov7670: Sensors.OV7670 @ i2c1 0x21
+ov7670: Sensors.OV7670 @ i2c2 0x21
     PCLK-> dcmi@0
     VSYNC-> dcmi@1
     HREF-> dcmi@2
@@ -53,24 +52,23 @@ dcmi:
 dcmi:
     IRQ-> nvic@78
 
-// SCCB (I2C1, SCL PB6 / SDA PB7) is shared by the OV7670, the IMU and is
+// SCCB (I2C2, SCL PB10 / SDA PB3) is shared by the OV7670 and the IMU and is
 // multi-drop, so there is no conflict. Pixel readout over SCCB is NOT
 // possible on real silicon; only DVP above carries pixels.
 
 gpioPortB:
     12 -> w5500@0
-    11 -> w5500@1
+    2 -> w5500@1
 
 // ST LSM9DS1 9-axis IMU (accel+gyro die at 0x6B, magnetometer die at 0x1E).
 // Both are II2CPeripheral models shipped with Renode; no custom code needed.
-// Firmware drives them over I2C1 (SCL PB6 / SDA PB7) with a minimal
+// Firmware drives them over I2C2 (SCL PB10 / SDA PB3) with a minimal
 // register-level master (the F1/F4 I2C is compatible for basic master use).
-lsm9ds1_imu: Sensors.LSM9DS1_IMU @ i2c1 0x6b
-lsm9ds1_mag: Sensors.LSM9DS1_Magnetic @ i2c1 0x1e
+lsm9ds1_imu: Sensors.LSM9DS1_IMU @ i2c2 0x6b
+lsm9ds1_mag: Sensors.LSM9DS1_Magnetic @ i2c2 0x1e
 
-GreenLED: Miscellaneous.LED @ gpioPortD
-RedLED: Miscellaneous.LED @ gpioPortD
+// The only user LED on the NUCLEO-F446RE is LD2 on PA5.
+GreenLED: Miscellaneous.LED @ gpioPortA
 
-gpioPortD:
-    12 -> GreenLED@0
-    14 -> RedLED@0
+gpioPortA:
+    5 -> GreenLED@0

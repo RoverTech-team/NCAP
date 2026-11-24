@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "main.h"
-#include "i2c1.h"
+#include "i2c_bus.h"
 
 // Accel/gyro die.
 #define REG_WHO_AM_I     0x0Fu
@@ -48,7 +48,7 @@ bool imu_init(void)
         {
             HAL_Delay(50);
         }
-        present = i2c1_read_regs(IMU_AG_ADDR, REG_WHO_AM_I, &who, 1u) && who == WHO_AM_I_AG;
+        present = i2c_bus_read_regs(IMU_AG_ADDR, REG_WHO_AM_I, &who, 1u) && who == WHO_AM_I_AG;
     }
     if (!present)
     {
@@ -58,31 +58,31 @@ bool imu_init(void)
     printf("F4: imu accel/gyro present\r\n");
 
     // Gyro: 119 Hz, +/-245 dps.
-    if (!i2c1_write_reg(IMU_AG_ADDR, REG_CTRL1_G, 0x60u))
+    if (!i2c_bus_write_reg(IMU_AG_ADDR, REG_CTRL1_G, 0x60u))
     {
         printf("F4: imu CTRL1_G write failed\r\n");
         return false;
     }
     // Accel XYZ enable.
-    if (!i2c1_write_reg(IMU_AG_ADDR, REG_CTRL5_XL, 0x38u))
+    if (!i2c_bus_write_reg(IMU_AG_ADDR, REG_CTRL5_XL, 0x38u))
     {
         printf("F4: imu CTRL5_XL write failed\r\n");
         return false;
     }
     // Accel: 50 Hz, +/-2 g.
-    if (!i2c1_write_reg(IMU_AG_ADDR, REG_CTRL6_XL, 0x60u))
+    if (!i2c_bus_write_reg(IMU_AG_ADDR, REG_CTRL6_XL, 0x60u))
     {
         printf("F4: imu CTRL6_XL write failed\r\n");
         return false;
     }
     // Keep register auto-increment on (default, but make it explicit).
-    if (!i2c1_write_reg(IMU_AG_ADDR, REG_CTRL8, 0x04u))
+    if (!i2c_bus_write_reg(IMU_AG_ADDR, REG_CTRL8, 0x04u))
     {
         printf("F4: imu CTRL8 write failed\r\n");
         return false;
     }
 
-    if (!i2c1_read_regs(IMU_MAG_ADDR, REG_WHO_AM_I_M, &who, 1u) || who != WHO_AM_I_M)
+    if (!i2c_bus_read_regs(IMU_MAG_ADDR, REG_WHO_AM_I_M, &who, 1u) || who != WHO_AM_I_M)
     {
         printf("F4: mag WHO_AM_I=%02X (want 3D) - continuing without mag\r\n", who);
         return true;
@@ -90,15 +90,15 @@ bool imu_init(void)
     printf("F4: imu magnetometer present\r\n");
 
     // Mag: ultra-high performance, 10 Hz, +/-4 gauss, continuous.
-    if (!i2c1_write_reg(IMU_MAG_ADDR, REG_CTRL1_M, 0x30u))
+    if (!i2c_bus_write_reg(IMU_MAG_ADDR, REG_CTRL1_M, 0x30u))
     {
         return false;
     }
-    if (!i2c1_write_reg(IMU_MAG_ADDR, REG_CTRL2_M, 0x00u))
+    if (!i2c_bus_write_reg(IMU_MAG_ADDR, REG_CTRL2_M, 0x00u))
     {
         return false;
     }
-    return i2c1_write_reg(IMU_MAG_ADDR, REG_CTRL3_M, 0x00u);
+    return i2c_bus_write_reg(IMU_MAG_ADDR, REG_CTRL3_M, 0x00u);
 }
 
 // Renode's STM32F1_I2C aborts on multi-byte master reads (unhandled
@@ -109,7 +109,7 @@ static bool read_block(uint8_t dev, uint8_t base, uint8_t *dst, uint8_t n)
 {
     for (uint8_t i = 0; i < n; i++)
     {
-        if (!i2c1_read_regs(dev, (uint8_t)(base + i), &dst[i], 1u))
+        if (!i2c_bus_read_regs(dev, (uint8_t)(base + i), &dst[i], 1u))
         {
             return false;
         }

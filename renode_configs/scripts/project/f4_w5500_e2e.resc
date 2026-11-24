@@ -13,6 +13,8 @@
 # =============================================================================
 
 include @renode_configs/peripherals/W5500.cs
+include @renode_configs/peripherals/OV7670.cs
+include @renode_configs/peripherals/Dcmi.cs
 
 mach create "f4w5500"
 machine LoadPlatformDescription @renode_configs/platforms/boards/stm32f4_w5500.repl

@@ -53,6 +53,7 @@ UARTDIR="$(mktemp -d -t f4_5vid_uart)"
 {
 echo 'include @renode_configs/peripherals/W5500.cs'
 echo 'include @renode_configs/peripherals/OV7670.cs'
+echo 'include @renode_configs/peripherals/Dcmi.cs'
 for i in $(seq 0 $((COUNT-1))); do
     echo "mach create \"v${i}\""
     echo "machine LoadPlatformDescription @renode_configs/platforms/boards/stm32f4_w5500.repl"

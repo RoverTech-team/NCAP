@@ -1,4 +1,4 @@
-// ST LSM9DS1 9-axis IMU over I2C1 (accel/gyro die at 0x6B, mag die at 0x1E).
+// ST LSM9DS1 9-axis IMU over I2C2 (accel/gyro die at 0x6B, mag die at 0x1E).
 //
 // Only the bring-up subset is implemented: WHO_AM_I check, a fixed
 // +/-2 g accel / +/-245 dps gyro / continuous mag configuration, and burst

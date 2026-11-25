@@ -970,6 +970,12 @@ Bring-up build notes:
   with solid pull-ups.
 - `NCAP_CAM_TEST=1` builds a camera-only probe loop that never touches the
   W5500, so the sensor can be debugged with the Ethernet module unpowered.
+- `NCAP_PIN_TEST=1` builds the DVP wiring self-test. Each data pin is probed
+  with the internal pull-up and pull-down and reported as `OK`, `OPEN` (wire
+  disconnected), `STUCK LOW` (on GND / sensor not driving) or `STUCK HIGH`
+  (on VCC); HS/VS/PLK are checked for edges. Run it with
+  `python3 scripts/test_camera_pins.py` for a pass/fail exit code. It catches
+  open/stuck lines, not a swap between two data lines (both still look driven).
 - The video personality used on the bench is
   `NCAP_VIDEO_UDP=1 NCAP_DVP=1 DVP_POLL_ONLY=1`, sending VFR0 to
   `VIDEO_HOST_IP:VIDEO_PORT` (default `192.168.0.1:18080`).

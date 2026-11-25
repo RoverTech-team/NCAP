@@ -266,6 +266,9 @@ simulator.
 
 - **W5500:** 3.3 V only. SCSn and RSTn are active low and idle high. Verify
   `VERSIONR == 0x04` on the debug UART. RSTn is PB2, not PB11.
+- **Wiring self-test:** `make -C firmware NCAP_PIN_TEST=1`, flash, then run
+  `python3 scripts/test_camera_pins.py`. It prints pull-up/pull-down duty and
+  edges per data pin and flags `OPEN`, `STUCK LOW` or `STUCK HIGH` lines.
 - **DCMI sync mode:** `ESS` must stay 0 (hardware sync). The OV7670's VSYNC is
   a frame-start pulse, so the capture needs `VSPOL=0`; HREF is active high
   (`HSPOL=1`) and data settles on the rising PCLK edge (`PCKPOL=1`).

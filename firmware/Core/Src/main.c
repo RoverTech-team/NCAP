@@ -364,6 +364,109 @@ static void timer_callback(rcl_timer_t *tm, int64_t ts)
 #endif /* NCAP_SYSUSAGE == 1 */
 }
 
+#if NCAP_PIN_TEST == 1
+// DVP wiring self-test. Each data pin is sampled twice, once with the internal
+// pull-up and once with the pull-down. A pin driven by the sensor reads much
+// the same both ways; a wire on GND stays low, a disconnected wire follows the
+// pull. HS/VS/PLK are checked for edges instead. Results are printed one line
+// per pin so scripts/test_camera_pins.py can parse them.
+typedef struct
+{
+    const char *name;
+    GPIO_TypeDef *port;
+    uint16_t pin;
+    char port_char;
+    uint8_t pin_no;
+    uint8_t is_data;
+} dvp_pin_desc_t;
+
+static const dvp_pin_desc_t dvp_pin_map[] = {
+    {"D0",  GPIOC, GPIO_PIN_6,  'C', 6,  1},
+    {"D1",  GPIOC, GPIO_PIN_7,  'C', 7,  1},
+    {"D2",  GPIOC, GPIO_PIN_8,  'C', 8,  1},
+    {"D3",  GPIOC, GPIO_PIN_9,  'C', 9,  1},
+    {"D4",  GPIOC, GPIO_PIN_11, 'C', 11, 1},
+    {"D5",  GPIOB, GPIO_PIN_6,  'B', 6,  1},
+    {"D6",  GPIOB, GPIO_PIN_8,  'B', 8,  1},
+    {"D7",  GPIOB, GPIO_PIN_9,  'B', 9,  1},
+    {"HS",  GPIOA, GPIO_PIN_4,  'A', 4,  0},
+    {"VS",  GPIOB, GPIO_PIN_7,  'B', 7,  0},
+    {"PLK", GPIOA, GPIO_PIN_6,  'A', 6,  0},
+};
+
+static void pin_sample(const dvp_pin_desc_t *p, uint32_t pull, uint32_t ms,
+                       uint32_t *high, uint32_t *edges, uint32_t *samples)
+{
+    GPIO_InitTypeDef g = {0};
+    g.Mode = GPIO_MODE_INPUT;
+    g.Pull = pull;
+    g.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    g.Pin = p->pin;
+    HAL_GPIO_Init(p->port, &g);
+
+    uint32_t prev = (p->port->IDR & p->pin) ? 1u : 0u;
+    uint32_t h = 0, e = 0, n = 0;
+    uint32_t t0 = HAL_GetTick();
+    while ((HAL_GetTick() - t0) < ms)
+    {
+        uint32_t v = (p->port->IDR & p->pin) ? 1u : 0u;
+        h += v;
+        e += (v ^ prev);
+        prev = v;
+        n++;
+    }
+    *high = h;
+    *edges = e;
+    *samples = (n != 0u) ? n : 1u;
+}
+
+static int dvp_pin_test_run(void)
+{
+    int failures = 0;
+    printf("PIN_TEST begin\r\n");
+    for (unsigned i = 0; i < (unsigned)(sizeof(dvp_pin_map) / sizeof(dvp_pin_map[0])); i++)
+    {
+        const dvp_pin_desc_t *p = &dvp_pin_map[i];
+        uint32_t hu, eu, nu, hd, ed, nd;
+        pin_sample(p, GPIO_PULLUP, 50u, &hu, &eu, &nu);
+        pin_sample(p, GPIO_PULLDOWN, 50u, &hd, &ed, &nd);
+        uint32_t up = (hu * 100u) / nu;
+        uint32_t dn = (hd * 100u) / nd;
+        const char *verdict;
+
+        if (!p->is_data)
+        {
+            verdict = (eu > 0u) ? "OK" : "NO SIGNAL";
+        }
+        else if (up <= 5u && dn <= 5u)
+        {
+            verdict = "STUCK LOW";
+        }
+        else if (up >= 95u && dn >= 95u)
+        {
+            verdict = "STUCK HIGH";
+        }
+        else
+        {
+            int diff = (int)up - (int)dn;
+            if (diff < 0) { diff = -diff; }
+            verdict = (diff >= 60) ? "OPEN" : "OK";
+        }
+
+        if (strcmp(verdict, "OK") != 0)
+        {
+            failures++;
+        }
+        printf("PIN %-3s P%c%-2u up=%2lu%% dn=%2lu%% edges=%lu %s\r\n",
+               p->name, p->port_char, (unsigned)p->pin_no,
+               (unsigned long)up, (unsigned long)dn,
+               (unsigned long)(eu + ed), verdict);
+    }
+    printf("PIN_TEST RESULT: %s (%d bad)\r\n", (failures != 0) ? "FAIL" : "PASS", failures);
+    return failures;
+}
+#endif
+
 #if NCAP_CAM_TEST == 1
 // Connectivity test: sample the data pins with pull-up and with pull-down.
 // A pin driven by the sensor reads the same duty both ways; a floating pin
@@ -434,6 +537,20 @@ int main(void)
     MX_USART2_UART_Init();
 
     uart_puts("\r\nNCAP micro-ROS over W5500\r\n");
+
+#if NCAP_PIN_TEST == 1
+    uart_puts("PIN TEST: DVP wiring self-test (no W5500 required)\r\n");
+    i2c_bus_init();
+    if (!ov7670_init())
+    {
+        uart_puts("PIN TEST: SCCB init failed - check sensor power and XCLK\r\n");
+    }
+    for (;;)
+    {
+        (void)dvp_pin_test_run();
+        HAL_Delay(5000);
+    }
+#endif
 
 #if NCAP_CAM_TEST == 1
     // Camera-only bring-up personality: no W5500, no micro-ROS. Re-probe SCCB

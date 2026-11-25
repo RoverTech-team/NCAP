@@ -72,6 +72,7 @@ def main():
     deadline = time.time() + args.timeout
     pins = []
     result = None
+    started = False
     try:
         while time.time() < deadline:
             raw = ser.readline()
@@ -80,6 +81,12 @@ def main():
             line = raw.decode("utf-8", "replace").strip()
             if line:
                 print("  " + line)
+            if line.startswith("PIN_TEST begin"):
+                started = True
+                pins = []
+                continue
+            if not started:
+                continue
             m = PIN_RE.search(line)
             if m:
                 name, port_char, pin_no, up, dn, edges, hz, verdict = m.groups()

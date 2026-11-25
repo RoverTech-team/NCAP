@@ -428,8 +428,11 @@ static int dvp_pin_test_run(void)
     {
         const dvp_pin_desc_t *p = &dvp_pin_map[i];
         uint32_t hu, eu, nu, hd, ed, nd;
-        pin_sample(p, GPIO_PULLUP, 50u, &hu, &eu, &nu);
-        pin_sample(p, GPIO_PULLDOWN, 50u, &hd, &ed, &nd);
+        // VSYNC is ~5 Hz, so sync lines need a much longer window than the
+        // data pins to catch at least one pulse.
+        uint32_t ms = p->is_data ? 50u : 400u;
+        pin_sample(p, GPIO_PULLUP, ms, &hu, &eu, &nu);
+        pin_sample(p, GPIO_PULLDOWN, ms, &hd, &ed, &nd);
         uint32_t up = (hu * 100u) / nu;
         uint32_t dn = (hd * 100u) / nd;
         const char *verdict;

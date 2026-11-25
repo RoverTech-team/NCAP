@@ -420,10 +420,15 @@ static void pin_sample(const dvp_pin_desc_t *p, uint32_t pull, uint32_t ms,
     *samples = (n != 0u) ? n : 1u;
 }
 
-static int dvp_pin_test_run(void)
+static int dvp_pin_test_run(bool sensor_ok)
 {
     int failures = 0;
     printf("PIN_TEST begin\r\n");
+    if (!sensor_ok)
+    {
+        printf("PIN_TEST SENSOR: FAIL (SCCB no ACK - power, RET/PWDN or XCLK)\r\n");
+        failures++;
+    }
     for (unsigned i = 0; i < (unsigned)(sizeof(dvp_pin_map) / sizeof(dvp_pin_map[0])); i++)
     {
         const dvp_pin_desc_t *p = &dvp_pin_map[i];
@@ -437,9 +442,31 @@ static int dvp_pin_test_run(void)
         uint32_t dn = (hd * 100u) / nd;
         const char *verdict;
 
+        uint32_t edges = eu + ed;
+        uint32_t hz = (edges * 1000u) / (2u * ms);
+
         if (!p->is_data)
         {
-            verdict = (eu > 0u) ? "OK" : "NO SIGNAL";
+            // Rate bands: HREF is ~1-30 kHz, VSYNC ~1-500 Hz (frame rate
+            // doubled), PCLK far above both but undersampled by polling.
+            if (strcmp(p->name, "HS") == 0)
+            {
+                verdict = (hz >= 100u && hz <= 50000u) ? "OK" : "WRONG RATE";
+            }
+            else if (strcmp(p->name, "VS") == 0)
+            {
+                verdict = (hz >= 1u && hz <= 500u) ? "OK" : "WRONG RATE";
+            }
+            else
+            {
+                verdict = (hz >= 1000u) ? "OK" : "NO SIGNAL";
+            }
+        }
+        else if (!sensor_ok)
+        {
+            // With no SCCB ACK the sensor is unpowered or in reset; the data
+            // lines are tri-stated and the pull test would be meaningless.
+            verdict = "SENSOR DOWN";
         }
         else if (up <= 5u && dn <= 5u)
         {
@@ -460,10 +487,10 @@ static int dvp_pin_test_run(void)
         {
             failures++;
         }
-        printf("PIN %-3s P%c%-2u up=%2lu%% dn=%2lu%% edges=%lu %s\r\n",
+        printf("PIN %-3s P%c%-2u up=%2lu%% dn=%2lu%% edges=%lu hz=%lu %s\r\n",
                p->name, p->port_char, (unsigned)p->pin_no,
                (unsigned long)up, (unsigned long)dn,
-               (unsigned long)(eu + ed), verdict);
+               (unsigned long)edges, (unsigned long)hz, verdict);
     }
     printf("PIN_TEST RESULT: %s (%d bad)\r\n", (failures != 0) ? "FAIL" : "PASS", failures);
     return failures;
@@ -544,13 +571,14 @@ int main(void)
 #if NCAP_PIN_TEST == 1
     uart_puts("PIN TEST: DVP wiring self-test (no W5500 required)\r\n");
     i2c_bus_init();
-    if (!ov7670_init())
+    bool sensor_ok = ov7670_init();
+    if (!sensor_ok)
     {
-        uart_puts("PIN TEST: SCCB init failed - check sensor power and XCLK\r\n");
+        uart_puts("PIN TEST: SCCB init failed - sensor may be unpowered or held in reset\r\n");
     }
     for (;;)
     {
-        (void)dvp_pin_test_run();
+        (void)dvp_pin_test_run(sensor_ok);
         HAL_Delay(5000);
     }
 #endif

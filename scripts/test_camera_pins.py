@@ -39,7 +39,7 @@ except ImportError:
     sys.exit("pyserial is required: python3 -m pip install pyserial")
 
 PIN_RE = re.compile(
-    r"PIN\s+(\S+)\s+P([ABC])(\d+)\s+up=\s*(\d+)%\s+dn=\s*(\d+)%\s+edges=(\d+)\s+(.+?)\s*$"
+    r"PIN\s+(\S+)\s+P([ABC])(\d+)\s+up=\s*(\d+)%\s+dn=\s*(\d+)%\s+edges=(\d+)\s+hz=(\d+)\s+(.+?)\s*$"
 )
 RESULT_RE = re.compile(r"PIN_TEST RESULT:\s*(PASS|FAIL)\s*\((\d+)\s+bad\)")
 
@@ -82,9 +82,9 @@ def main():
                 print("  " + line)
             m = PIN_RE.search(line)
             if m:
-                name, port_char, pin_no, up, dn, edges, verdict = m.groups()
+                name, port_char, pin_no, up, dn, edges, hz, verdict = m.groups()
                 pins.append((name, f"P{port_char}{pin_no}", int(up), int(dn),
-                             int(edges), verdict))
+                             int(edges), int(hz), verdict))
             m = RESULT_RE.search(line)
             if m:
                 result = (m.group(1), int(m.group(2)))
@@ -96,9 +96,9 @@ def main():
         sys.exit(2)
 
     print("\nDVP pin summary")
-    print(f"{'signal':6} {'pin':5} {'pull-up':>7} {'pull-dn':>7} {'edges':>7}  verdict")
-    for name, pin, up, dn, edges, verdict in pins:
-        print(f"{name:6} {pin:5} {up:6}% {dn:6}% {edges:7}  {verdict}")
+    print(f"{'signal':6} {'pin':5} {'pull-up':>7} {'pull-dn':>7} {'edges':>7} {'Hz':>8}  verdict")
+    for name, pin, up, dn, edges, hz, verdict in pins:
+        print(f"{name:6} {pin:5} {up:6}% {dn:6}% {edges:7} {hz:8}  {verdict}")
 
     if result is None:
         print("\nFAIL: no PIN_TEST RESULT line (firmware not running?)")

@@ -571,13 +571,15 @@ int main(void)
 #if NCAP_PIN_TEST == 1
     uart_puts("PIN TEST: DVP wiring self-test (no W5500 required)\r\n");
     i2c_bus_init();
-    bool sensor_ok = ov7670_init();
-    if (!sensor_ok)
-    {
-        uart_puts("PIN TEST: SCCB init failed - sensor may be unpowered or held in reset\r\n");
-    }
     for (;;)
     {
+        // Re-probe SCCB every cycle so reseating a wire is reflected without
+        // a reset. ov7670_init() re-pulses RET and re-applies the registers.
+        bool sensor_ok = ov7670_init();
+        if (!sensor_ok)
+        {
+            uart_puts("PIN TEST: SCCB init failed - sensor may be unpowered or held in reset\r\n");
+        }
         (void)dvp_pin_test_run(sensor_ok);
         HAL_Delay(5000);
     }

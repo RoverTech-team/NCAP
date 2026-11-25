@@ -26,7 +26,7 @@ PCLK2 90 MHz.
 
 | Peripheral | Pins | Bus / configuration |
 |---|---|---|
-| WIZnet W5500 Ethernet | PB13, PB14, PB15, PB12, PB2 (PB1 optional INTn) | SPI2, mode 0, PCLK1/4 = 11.25 MHz; active-low SCSn/RSTn |
+| WIZnet W5500 Ethernet | PB13, PB14, PB15, PB12, PB2 (PB1 optional INTn) | SPI2, mode 0, PCLK1/8 = 5.6 MHz default (PCLK1/4 = 11.25 MHz with `W5500_SPI_PRESCALER=SPI_BAUDRATEPRESCALER_4`); active-low SCSn/RSTn |
 | OV7670 camera — pixels | PA6, PA4, PB7, PC6–PC9, PC11, PB6, PB8, PB9 | DCMI AF13, 8-bit DVP |
 | OV7670 camera — clock / power / reset | PA8, PA11, PB0 | MCO1 16 MHz XCLK; PWDN and RET as GPIO |
 | OV7670 camera — control + LSM9DS1 IMU | PB10, PB3 | I2C2 (SCCB), 400 kHz |
@@ -38,7 +38,7 @@ PCLK2 90 MHz.
 
 | Pin | Signal | Mode | Notes |
 |---|---|---|---|
-| PB13 | `SPI2_SCK` | AF5, push-pull | 11.25 MHz (PCLK1 45 MHz / 4) |
+| PB13 | `SPI2_SCK` | AF5, push-pull | 5.6 MHz default (PCLK1 45 MHz / 8); /4 = 11.25 MHz with short wiring |
 | PB14 | `SPI2_MISO` | AF5, input | |
 | PB15 | `SPI2_MOSI` | AF5, push-pull | |
 | PB12 | `W5500_SCSn` | GPIO output PP | Idle high, driven low for each SPI frame |

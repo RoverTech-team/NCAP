@@ -976,6 +976,9 @@ Bring-up build notes:
   (on VCC); HS/VS/PLK are checked for edges. Run it with
   `python3 scripts/test_camera_pins.py` for a pass/fail exit code. It catches
   open/stuck lines, not a swap between two data lines (both still look driven).
+- W5500 SPI2 runs at 5.6 MHz by default (`W5500_SPI_PRESCALER=SPI_BAUDRATEPRESCALER_8`)
+  because long breadboard jumpers corrupted socket-register reads at 11.25 MHz.
+  With short wiring, `W5500_SPI_PRESCALER=SPI_BAUDRATEPRESCALER_4` restores 11.25 MHz.
 - The video personality used on the bench is
   `NCAP_VIDEO_UDP=1 NCAP_DVP=1 DVP_POLL_ONLY=1`, sending VFR0 to
   `VIDEO_HOST_IP:VIDEO_PORT` (default `192.168.0.1:18080`).

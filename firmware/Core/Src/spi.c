@@ -89,7 +89,10 @@ void MX_SPI2_Init(void)
   // allows 80 MHz but real modules are signal-integrity limited near
   // 25-50 MHz; the video budget only needs ~22 MHz to clear 24 fps, so /4 is
   // the deliberate choice for margin.
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+#ifndef W5500_SPI_PRESCALER
+#define W5500_SPI_PRESCALER SPI_BAUDRATEPRESCALER_8
+#endif
+  hspi2.Init.BaudRatePrescaler = W5500_SPI_PRESCALER;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;

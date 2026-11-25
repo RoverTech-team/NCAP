@@ -34,6 +34,8 @@
 
 static uint8_t w5500_agent_ip[4] = {127, 0, 0, 1};
 static bool w5500_opened = false;
+static uint32_t w5500_tx_fail_prints;
+static uint32_t w5500_rx_fail_prints;
 
 // Cooperative yield point for the RX busy-poll below.
 //
@@ -136,6 +138,9 @@ bool cubemx_transport_open_w5500(struct uxrCustomTransport *transport)
         return false;
     }
     w5500_opened = true;
+    printf("F4: sock%u SR=%02X MR=%02X\r\n", (unsigned)W5500_TRANSPORT_SOCK,
+           (unsigned)getSn_SR(W5500_TRANSPORT_SOCK),
+           (unsigned)getSn_MR(W5500_TRANSPORT_SOCK));
     printf("F4: transport-open agent=%d.%d.%d.%d:%d\r\n",
            w5500_agent_ip[0], w5500_agent_ip[1], w5500_agent_ip[2], w5500_agent_ip[3],
            W5500_AGENT_PORT);
@@ -179,7 +184,13 @@ size_t cubemx_transport_write_w5500(struct uxrCustomTransport *transport,
                          w5500_agent_ip, W5500_AGENT_PORT);
     if (ret <= 0)
     {
-        printf("F4: w5500-sendto-failed %ld\r\n", (long)ret);
+        if (w5500_tx_fail_prints < 8u)
+        {
+            w5500_tx_fail_prints++;
+            printf("F4: w5500-sendto-failed %ld SR=%02X MR=%02X\r\n", (long)ret,
+                   (unsigned)getSn_SR(W5500_TRANSPORT_SOCK),
+                   (unsigned)getSn_MR(W5500_TRANSPORT_SOCK));
+        }
         if (err) *err = 1;
         return 0;
     }
@@ -234,7 +245,13 @@ size_t cubemx_transport_read_w5500(struct uxrCustomTransport *transport, uint8_t
                            (uint16_t)(len > 0xFFFFu ? 0xFFFFu : len), peer_ip, &peer_port);
     if (ret < 0)
     {
-        printf("F4: w5500-recvfrom-failed\r\n");
+        if (w5500_rx_fail_prints < 5u)
+        {
+            w5500_rx_fail_prints++;
+            printf("F4: w5500-recvfrom-failed %ld SR=%02X MR=%02X\r\n", (long)ret,
+                   (unsigned)getSn_SR(W5500_TRANSPORT_SOCK),
+                   (unsigned)getSn_MR(W5500_TRANSPORT_SOCK));
+        }
         if (err) *err = 1;
         return 0;
     }
